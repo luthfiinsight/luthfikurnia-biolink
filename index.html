@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memuat...</title>
+    <meta name="description" content="Halaman Bio Link Pribadi yang dinamis dan modern, diedit langsung dari HTML.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        :root {
+            --bg-gradient-start: #d4fc79; --bg-gradient-end: #96e6a1;
+            --container-bg: rgba(255, 255, 255, 0.65); --primary-text: #1c1e21;
+            --secondary-text: #555; --link-bg: rgba(255, 255, 255, 0.7);
+            --link-hover-bg: rgba(255, 255, 255, 1); --shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            --border-color: rgba(200, 200, 200, 0.5); --border-radius: 16px;
+            --blur-intensity: 10px; --accent-color: #96e6a1;
+        }
+        [data-theme='dark'] {
+            --bg-gradient-start: #0f2027; --bg-gradient-end: #203a43;
+            --container-bg: rgba(20, 20, 20, 0.5); --primary-text: #f0f2f5;
+            --secondary-text: #a0a0a0; --link-bg: rgba(40, 40, 40, 0.6);
+            --link-hover-bg: rgba(50, 50, 50, 0.8); --shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            --border-color: rgba(255, 255, 255, 0.15);
+        }
+        @keyframes gradient-animation { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(-45deg, var(--bg-gradient-start), var(--bg-gradient-end), #f8ffae, #fdeb71); background-size: 400% 400%; animation: gradient-animation 15s ease infinite; color: var(--primary-text); display: flex; justify-content: center; padding: 20px; min-height: 100vh; transition: background 0.5s ease; }
+        .container { max-width: 680px; width: 100%; text-align: center; background: var(--container-bg); backdrop-filter: blur(var(--blur-intensity)); -webkit-backdrop-filter: blur(var(--blur-intensity)); border-radius: var(--border-radius); padding: 30px 20px; box-shadow: var(--shadow); border: 1px solid var(--border-color); transition: background 0.3s ease; }
+        .profile-section { margin-bottom: 20px; }
+        .profile-pic { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--border-color); box-shadow: var(--shadow); }
+        .profile-name { font-size: 2rem; font-weight: 700; margin: 15px 0 5px; }
+        .profile-description { font-size: 1rem; color: var(--secondary-text); max-width: 90%; margin: 0 auto 20px auto; }
+        #clock-container { background-color: var(--link-bg); padding: 10px 15px; border-radius: 12px; margin-top: 20px; border: 1px solid var(--border-color); }
+        #clock-time { font-size: 1.8rem; font-weight: 600; letter-spacing: 2px; }
+        #clock-date { font-size: 0.9rem; color: var(--secondary-text); }
+        .loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 1.5rem; z-index: 2000; transition: opacity 0.3s; text-align: center; padding: 20px; }
+        .loading-overlay p { margin-top: 10px; font-size: 1rem; }
+        .theme-switch-wrapper { position: absolute; top: 20px; right: 20px; z-index: 10; }
+        .theme-switch { display: inline-block; height: 28px; position: relative; width: 50px; }
+        .theme-switch input { display: none; }
+        .slider { background-color: rgba(0,0,0,0.2); position: absolute; inset: 0; cursor: pointer; transition: .4s; border-radius: 28px; }
+        .slider:before { background-color: #fff; position: absolute; content: ""; height: 20px; width: 20px; bottom: 4px; left: 4px; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent-color); }
+        input:checked + .slider:before { transform: translateX(22px); }
+        .search-wrapper { margin-bottom: 20px; }
+        #search-input { width: 100%; padding: 12px 15px; border-radius: var(--border-radius); border: 1px solid var(--border-color); background-color: var(--link-bg); color: var(--primary-text); font-size: 1rem; }
+        #search-input:focus { outline: none; box-shadow: 0 0 0 2px var(--accent-color); }
+        .tabs-nav { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
+        .tab-button { flex: 1; padding: 10px; background-color: transparent; border: none; border-bottom: 3px solid transparent; color: var(--secondary-text); font-size: 1rem; font-weight: 600; cursor: pointer; transition: color 0.3s, border-color 0.3s; }
+        .tab-button:hover { color: var(--primary-text); }
+        .tab-button.active { color: var(--primary-text); border-bottom-color: var(--accent-color); }
+        .content-section { min-height: 250px; }
+        .content-section.hidden, .category-group.hidden, .hidden { display: none; }
+        .category-group { margin-bottom: 25px; }
+        .category-title { font-size: 1.2rem; font-weight: 600; text-align: left; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 2px solid var(--border-color); }
+        .link-item, .media-item-link { background-color: var(--link-bg); color: var(--primary-text); padding: 15px 20px; border-radius: var(--border-radius); text-decoration: none; font-weight: 600; font-size: 1rem; transition: background-color 0.2s, transform 0.2s; border: 1px solid var(--border-color); display: flex; margin-bottom: 15px; align-items: center; }
+        .link-item:hover, .media-item-link:hover { background-color: var(--link-hover-bg); transform: scale(1.02); }
+        .link-item.disabled { pointer-events: none; opacity: 0.6; }
+        .media-item-link .thumbnail { width: 80px; height: 80px; flex-shrink: 0; border-radius: 10px; object-fit: cover; margin-right: 15px; }
+        .media-item-link .media-title { font-weight: 600; }
+        .socials-container { display: flex; justify-content: center; gap: 25px; margin-top: 30px; }
+        .social-link { font-size: 1.8rem; color: var(--secondary-text); transition: color 0.2s, transform 0.2s; }
+        .social-link:hover { color: var(--primary-text); transform: scale(1.2); }
+        .copyright-footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); color: var(--secondary-text); font-size: 0.9rem; transition: color 0.3s, border-color 0.3s; }
+        #music-content { padding-top: 10px; }
+        .player-core { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .album-art { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+        .song-info { text-align: left; flex-grow: 1; }
+        .song-title { font-weight: 700; font-size: 1.1rem; }
+        .song-artist { color: var(--secondary-text); font-size: 0.9rem; }
+        .player-controls { display: flex; align-items: center; gap: 15px; }
+        .player-controls button { background: none; border: none; color: var(--primary-text); font-size: 1.5rem; cursor: pointer; transition: transform 0.2s, color 0.2s; padding: 5px; }
+        .player-controls button:hover { transform: scale(1.1); color: var(--accent-color); }
+        .progress-container { width: 100%; height: 8px; background-color: var(--link-bg); border-radius: 4px; cursor: pointer; margin-bottom: 15px; }
+        .progress-bar { width: 0; height: 100%; background-color: var(--accent-color); border-radius: 4px; }
+        .playlist-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        .playlist-controls input, .playlist-controls select { flex-grow: 1; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--link-bg); color: var(--primary-text); font-size: 0.9rem; min-width: 150px; }
+        .playlist { text-align: left; max-height: 300px; overflow-y: auto; }
+        .no-results-message { color: var(--secondary-text); padding: 20px; text-align: center; }
+        .playlist-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px; cursor: pointer; transition: background-color 0.2s; border-bottom: 1px solid var(--border-color); }
+        .playlist-item:last-child { border-bottom: none; }
+        .playlist-item:hover { background-color: var(--link-hover-bg); }
+        .playlist-item.active { background-color: var(--accent-color); color: #fff; }
+        .playlist-item.active .playlist-artist-col, .playlist-item.active .playlist-title-col { color: rgba(255,255,255,0.85); }
+        .playlist-title-col { font-weight: 600; }
+        .playlist-artist-col { color: var(--secondary-text); }
+        /* Style untuk Halaman Carousel Khusus */
+        .carousel-page-body { padding: 0; margin: 0; display: block; }
+        .fullscreen-carousel-container { position: fixed; inset: 0; background-color: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .fullscreen-carousel-slides { display: flex; height: 100%; width: 100%; transition: transform 0.4s ease-out; }
+        .fullscreen-carousel-slide { min-width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+        .fullscreen-carousel-slide img { max-width: 95%; max-height: 95%; object-fit: contain; user-select: none; pointer-events: none; }
+        .fullscreen-carousel-button { position: absolute; top: 50%; transform: translateY(-50%); background-color: rgba(0, 0, 0, 0.5); color: white; border: none; padding: 15px; font-size: 30px; cursor: pointer; z-index: 100; transition: background-color 0.2s; }
+        .fullscreen-carousel-button:hover { background-color: rgba(0, 0, 0, 0.8); }
+        .fullscreen-carousel-button.prev { left: 10px; }
+        .fullscreen-carousel-button.next { right: 10px; }
+        .fullscreen-carousel-close { position: absolute; top: 15px; right: 20px; color: white; font-size: 40px; text-decoration: none; z-index: 100; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="app-wrapper">
+        <div class="loading-overlay" id="loading">Memuat data...</div>
+        <div class="theme-switch-wrapper"><label class="theme-switch" for="checkbox"><input type="checkbox" id="checkbox" /><div class="slider round"></div></label></div>
+        <div class="container">
+            <header id="profile-section" class="profile-section"></header>
+            <div class="search-wrapper"><input type="text" id="search-input" placeholder="Cari di Tautan & Galeri..."></div>
+            <nav class="tabs-nav">
+                <button class="tab-button active" data-tab="links" aria-label="Tampilkan Tautan">Tautan</button>
+                <button class="tab-button" data-tab="media" aria-label="Tampilkan Galeri">Galeri</button>
+                <button class="tab-button" data-tab="music" aria-label="Tampilkan Playlist">Playlist</button>
+            </nav>
+            <div id="content-sections">
+                <section id="links-content" class="content-section"></section>
+                <section id="media-content" class="content-section hidden"></section>
+                <section id="music-content" class="content-section hidden"></section>
+                <p id="no-results-all" class="no-results-message hidden">Tidak ada hasil yang cocok dengan pencarian Anda.</p>
+            </div>
+            <footer id="socials-container" class="socials-container"></footer>
+            <div class="copyright-footer">© Luthfi Kurnia 2025</div>
+        </div>
+    </div>
+    <audio id="audio-player"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // =========================================================================
+            // FUNGSI INTI UNTUK HALAMAN CAROUSEL
+            // =========================================================================
+            const buildCarouselPage = (imageUrls) => {
+                document.body.innerHTML = ''; // Hapus konten halaman utama
+                document.body.className = 'carousel-page-body';
+
+                const container = document.createElement('div');
+                container.className = 'fullscreen-carousel-container';
+                
+                const slides = document.createElement('div');
+                slides.className = 'fullscreen-carousel-slides';
+                slides.innerHTML = imageUrls.map(url => `
+                    <div class="fullscreen-carousel-slide"><img src="${url}" alt="Gambar Carousel"></div>
+                `).join('');
+                
+                const prevButton = document.createElement('button');
+                prevButton.className = 'fullscreen-carousel-button prev';
+                prevButton.innerHTML = '❮';
+
+                const nextButton = document.createElement('button');
+                nextButton.className = 'fullscreen-carousel-button next';
+                nextButton.innerHTML = '❯';
+
+                const closeButton = document.createElement('a');
+                closeButton.className = 'fullscreen-carousel-close';
+                closeButton.href = window.location.pathname; // Link kembali ke halaman utama
+                closeButton.innerHTML = '&times;';
+                
+                container.append(slides, prevButton, nextButton, closeButton);
+                document.body.appendChild(container);
+                
+                let currentIndex = 0;
+                const totalSlides = imageUrls.length;
+
+                const showSlide = (index) => {
+                    slides.style.transform = `translateX(-${index * 100}%)`;
+                };
+
+                const showNext = () => { currentIndex = (currentIndex + 1) % totalSlides; showSlide(currentIndex); };
+                const showPrev = () => { currentIndex = (currentIndex - 1 + totalSlides) % totalSlides; showSlide(currentIndex); };
+                
+                nextButton.addEventListener('click', showNext);
+                prevButton.addEventListener('click', showPrev);
+
+                // Fungsi swipe untuk layar sentuh
+                let touchStartX = 0;
+                container.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+                container.addEventListener('touchend', e => {
+                    const touchEndX = e.changedTouches[0].screenX;
+                    if (touchStartX - touchEndX > 50) showNext();
+                    if (touchStartX - touchEndX < -50) showPrev();
+                });
+            };
+
+            // =========================================================================
+            // PENGECEKAN URL SAAT HALAMAN DIMUAT
+            // =========================================================================
+            const urlParams = new URLSearchParams(window.location.search);
+            const carouselImagesParam = urlParams.get('carousel');
+
+            if (carouselImagesParam) {
+                // Jika URL memiliki parameter 'carousel', bangun halaman carousel
+                const imageUrls = decodeURIComponent(carouselImagesParam).split(',');
+                buildCarouselPage(imageUrls);
+            } else {
+                // Jika tidak, jalankan aplikasi utama seperti biasa
+                initializeApp();
+            }
+
+            // =========================================================================
+            // FUNGSI UTAMA APLIKASI
+            // =========================================================================
+            function initializeApp() {
+                const googleSheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRVUqOsy5ZqXOu8FIV26TLdUePK8SWYsHXDH265TBJTWrctGinKR0-jldgBMHs60TnPiz-4TwmNfOGK/pub?gid=400386668&single=true&output=csv"; 
+
+                const LOCAL_DATA = {
+                    pageSettings: { title: "Luthfi Kurnia - Bio Link", favicon: "https://i.ibb.co/tPdrJp4/Desain-tanpa-judul.png" },
+                    profile: [ { key: 'name', value: 'Luthfi Kurnia' }, { key: 'description', value: 'Selamat datang di pusat informasi dan layanan digital RS Hermina Padang. Temukan semua yang Anda butuhkan di sini.' }, { key: 'photoURL', value: 'https://i.ibb.co/tPdrJp4/Desain-tanpa-judul.png' } ],
+                    links: [
+                            { category: 'Aplikasi Hermina', text: 'WEB Hermina', url: 'https://herminahospitals.com/id' },
+                            { category: 'Aplikasi Hermina', text: 'VClaim BPJS', url: 'https://vclaim.bpjs-kesehatan.go.id/VClaim/Penjaminan' },
+                            { category: 'Aplikasi Hermina', text: 'Hinai WEB', url: 'https://simrs.herminahospitals.com/live/login.html' },
+                    ],
+                    // [CONTOH] Data media dengan tipe 'carousel'
+                    media: [ 
+                        { category: 'Contoh Galeri', title: 'Gambar Tunggal', type: 'image', thumbnailURL: 'https://i.imgur.com/KxSO5B7.png', contentURL: 'https://i.imgur.com/KxSO5B7.png' },
+                        { category: 'Contoh Galeri', title: 'Galeri Interaktif (Carousel)', type: 'carousel', thumbnailURL: 'https://i.imgur.com/08hRjje.png', contentURL: 'https://i.imgur.com/08hRjje.png,https://i.imgur.com/KxSO5B7.png,https://i.ibb.co/tPdrJp4/Desain-tanpa-judul.png' },
+                    ],
+                    socials: [ { platform: 'website', url: 'https://herminahospitals.com/id/branch/hermina-padang' }, { platform: 'instagram', url: 'https://instagram.com/rsuherminapadang' } ]
+                };
+                const MANUAL_SONG_LIST_FALLBACK = [{ title: "Gagal Memuat Playlist", artist: "Periksa kembali link Google Sheets Anda.", cover: "", url: "" }];
+                const elements = { profile: document.getElementById('profile-section'), links: document.getElementById('links-content'), media: document.getElementById('media-content'), music: document.getElementById('music-content'), socials: document.getElementById('socials-container'), search: document.getElementById('search-input'), loading: document.getElementById('loading'), tabsNav: document.querySelector('.tabs-nav'), contentSections: document.querySelectorAll('.content-section'), themeToggle: document.getElementById('checkbox'), noResultsAll: document.getElementById('no-results-all') };
+                const socialIconMap = { 'instagram': 'fa-brands fa-instagram', 'twitter': 'fa-brands fa-x-twitter', 'facebook': 'fa-brands fa-facebook-f', 'linkedin': 'fa-brands fa-linkedin-in', 'github': 'fa-brands fa-github', 'youtube': 'fa-brands fa-youtube', 'tiktok': 'fa-brands fa-tiktok', 'threads': 'fa-brands fa-threads', 'website': 'fa-solid fa-globe', 'email': 'fa-solid fa-envelope', 'whatsapp': 'fa-brands fa-whatsapp', 'telegram': 'fa-brands fa-telegram' };
+
+                function applyPageSettings(settings) { if (!settings) return; document.title = settings.title || 'Bio Link'; if (settings.favicon) { let link = document.querySelector("link[rel*='icon']") || document.createElement('link'); link.type = 'image/png'; link.rel = 'shortcut icon'; link.href = settings.favicon; document.head.appendChild(link); } }
+                function renderAllContent(data) { renderProfile(data.profile); renderCategorizedItems(elements.links, data.links || [], createLinkItem); renderCategorizedItems(elements.media, data.media || [], createMediaItem); renderSocials(data.socials, data.profile); }
+                function renderProfile(profileData) { if (!elements.profile || !profileData?.length) return; const profile = profileData.reduce((obj, item) => ({...obj, [item.key]: item.value }), {}); elements.profile.innerHTML = `<img src="${profile.photoURL}" alt="Foto Profil ${profile.name}" class="profile-pic"><h1 class="profile-name">${profile.name}</h1><p class="profile-description">${profile.description}</p><div id="clock-container"><div id="clock-time"></div><div id="clock-date"></div></div>`; }
+                function renderSocials(socialsData, profileData) { if (!elements.socials || !socialsData?.length) return; const profileName = profileData?.find(p => p.key === 'name')?.value || 'kami'; elements.socials.innerHTML = socialsData.map(social => { const platformName = social.platform.charAt(0).toUpperCase() + social.platform.slice(1); const ariaLabel = `Kunjungi ${platformName} ${profileName}`; return `<a href="${social.url}" target="_blank" class="social-link" aria-label="${ariaLabel}"><i class="${socialIconMap[social.platform.toLowerCase()] || 'fa-solid fa-link'}"></i></a>`}).join(''); }
+                function renderCategorizedItems(container, items, createItemFunc) { container.innerHTML = ''; if (!items || items.length === 0) { container.innerHTML = `<p class="no-results-message">Tidak ada konten di kategori ini.</p>`; return; } const grouped = items.reduce((acc, item) => { const category = item.category || 'Lainnya'; if (!acc[category]) acc[category] = []; acc[category].push(item); return acc; }, {}); const fragment = document.createDocumentFragment(); for (const category in grouped) { const categoryGroup = document.createElement('div'); categoryGroup.className = 'category-group'; categoryGroup.innerHTML = `<h2 class="category-title">${category}</h2>`; grouped[category].forEach(item => categoryGroup.appendChild(createItemFunc(item))); fragment.appendChild(categoryGroup); } container.appendChild(fragment); }
+                
+                function createLinkItem(item) { const a = document.createElement('a'); a.href = item.url; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.className = 'link-item'; a.textContent = item.text; a.dataset.searchableText = item.text.toLowerCase(); if (!item.url || item.url === '#') a.classList.add('disabled'); return a; }
+                
+                // [PEMUTAKHIRAN] Fungsi ini diubah untuk menangani semua tipe media
+                function createMediaItem(item) {
+                    const a = document.createElement('a');
+                    a.className = 'media-item-link';
+                    a.dataset.searchableText = item.title.toLowerCase();
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+
+                    if (item.type === 'image' || item.type === 'video') {
+                        a.href = item.contentURL;
+                    } else if (item.type === 'carousel') {
+                        // Membuat link khusus untuk halaman carousel
+                        a.href = `?carousel=${encodeURIComponent(item.contentURL)}`;
+                    } else {
+                        a.href = '#'; // Fallback
+                    }
+
+                    a.innerHTML = `<img src="${item.thumbnailURL}" alt="${item.title}" class="thumbnail" loading="lazy"><div class="media-title">${item.title}</div>`;
+                    return a;
+                }
+
+                function updateClock() {
+                    const now = new Date();
+                    const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jakarta' };
+                    const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Jakarta' };
+                    const dateString = now.toLocaleDateString('id-ID', optionsDate);
+                    const timeString = now.toLocaleTimeString('id-ID', optionsTime).replace(/\./g, ':');
+                    const clockTimeEl = document.getElementById('clock-time');
+                    const clockDateEl = document.getElementById('clock-date');
+                    if (clockTimeEl) clockTimeEl.textContent = timeString;
+                    if (clockDateEl) clockDateEl.textContent = dateString;
+                }
+                
+                function handleSearch() {
+                    const searchTerm = elements.search.value.toLowerCase().trim();
+                    let anyResults = false;
+                    ['links-content', 'media-content'].forEach(contentId => {
+                        const section = document.getElementById(contentId);
+                        if (section.classList.contains('hidden')) return;
+                        let itemsFoundInSection = false;
+                        section.querySelectorAll('.category-group').forEach(group => {
+                            let visibleItemsInGroup = 0;
+                            group.querySelectorAll('.link-item, .media-item-link').forEach(item => {
+                                const isVisible = item.dataset.searchableText.includes(searchTerm);
+                                item.classList.toggle('hidden', !isVisible);
+                                if (isVisible) visibleItemsInGroup++;
+                            });
+                            group.classList.toggle('hidden', visibleItemsInGroup === 0);
+                            if (visibleItemsInGroup > 0) itemsFoundInSection = true;
+                        });
+                        if (itemsFoundInSection) anyResults = true;
+                    });
+                    elements.noResultsAll.classList.toggle('hidden', anyResults || searchTerm === "");
+                }
+
+                function setupThemeSwitcher() {
+                    const setDocsTheme = (isDark) => { document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light'); localStorage.setItem('theme', isDark ? 'dark' : 'light'); elements.themeToggle.checked = isDark; };
+                    elements.themeToggle.addEventListener('change', (e) => setDocsTheme(e.target.checked));
+                    setDocsTheme(localStorage.getItem('theme') === 'dark');
+                }
+
+                async function getPlaylistFromGoogleSheets(url) {
+                    if (!url || url === "PASTE_LINK_CSV_ANDA_DI_SINI") { console.error("URL Google Sheets CSV belum dikonfigurasi."); return MANUAL_SONG_LIST_FALLBACK; }
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) throw new Error('Gagal mengambil data dari network.');
+                        const csvText = await response.text();
+                        const lines = csvText.trim().replace(/\r/g, '').split('\n');
+                        const headers = lines[0].split(',').map(h => h.trim());
+                        const result = [];
+                        for (let i = 1; i < lines.length; i++) {
+                            const values = lines[i].split(',');
+                            if (values.length === headers.length) {
+                               const obj = {};
+                               headers.forEach((header, index) => { obj[header] = values[index]?.trim().replace(/"/g, '') || ""; });
+                               if (obj.url) result.push(obj);
+                            }
+                        }
+                        return result.length > 0 ? result : MANUAL_SONG_LIST_FALLBACK;
+                    } catch (error) {
+                        console.error("Error fetching playlist:", error); return MANUAL_SONG_LIST_FALLBACK;
+                    }
+                }
+
+                function setupMusicPlayer(songs) {
+                    const container = elements.music;
+                    if (!container || !songs || songs.length === 0) { container.innerHTML = '<p class="no-results-message">Playlist kosong atau gagal dimuat.</p>'; return; }
+                    container.innerHTML = `<div class="player-core"><img src="" alt="Album Art" class="album-art"><div class="song-info"><div class="song-title">Pilih lagu</div><div class="song-artist">untuk memulai</div></div><div class="player-controls"><button id="prev-btn" aria-label="Lagu Sebelumnya"><i class="fas fa-step-backward"></i></button><button id="play-btn" aria-label="Putar"><i class="fas fa-play"></i></button><button id="next-btn" aria-label="Lagu Berikutnya"><i class="fas fa-step-forward"></i></button></div></div><div class="progress-container"><div class="progress-bar"></div></div><div class="playlist-controls"><input type="text" id="playlist-search" placeholder="Cari di dalam playlist..."><select id="category-filter"></select><select id="sort-order"></select></div><div class="playlist"></div>`;
+                    const audio = document.getElementById('audio-player');
+                    const playBtn = container.querySelector('#play-btn'), prevBtn = container.querySelector('#prev-btn'), nextBtn = container.querySelector('#next-btn');
+                    const albumArt = container.querySelector('.album-art'), titleEl = container.querySelector('.song-title'), artistEl = container.querySelector('.song-artist');
+                    const progressContainer = container.querySelector('.progress-container'), progressBar = container.querySelector('.progress-bar');
+                    const playlistEl = container.querySelector('.playlist');
+                    const searchInput = container.querySelector('#playlist-search'), categoryFilter = container.querySelector('#category-filter'), sortOrder = container.querySelector('#sort-order');
+                    let currentSongIndex = 0, isPlaying = false;
+                    let currentlyDisplayedSongs = [...songs];
+                    const populateFilters = () => {
+                        const categories = ['Semua Kategori', ...new Set(songs.map(s => s.category).filter(c => c))];
+                        categoryFilter.innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
+                        const sortOptions = { 'default': 'Urutan Default', 'title-az': 'Judul (A-Z)', 'title-za': 'Judul (Z-A)' };
+                        sortOrder.innerHTML = Object.entries(sortOptions).map(([value, text]) => `<option value="${value}">${text}</option>`).join('');
+                    };
+                    const updateAndRenderPlaylist = () => {
+                        const searchTerm = searchInput.value.toLowerCase();
+                        const selectedCategory = categoryFilter.value;
+                        const selectedSort = sortOrder.value;
+                        let processedSongs = [...songs];
+                        if (selectedCategory !== 'Semua Kategori') { processedSongs = processedSongs.filter(s => s.category === selectedCategory); }
+                        if (searchTerm) { processedSongs = processedSongs.filter(s => s.title.toLowerCase().includes(searchTerm) || s.artist.toLowerCase().includes(searchTerm)); }
+                        switch (selectedSort) {
+                            case 'title-az': processedSongs.sort((a, b) => a.title.localeCompare(b.title)); break;
+                            case 'title-za': processedSongs.sort((a, b) => b.title.localeCompare(a.title)); break;
+                        }
+                        currentlyDisplayedSongs = processedSongs;
+                        renderPlaylist(currentlyDisplayedSongs);
+                    };
+                    const renderPlaylist = (playlist) => {
+                        playlistEl.innerHTML = playlist.length ? playlist.map(song => {
+                            const originalIndex = songs.findIndex(s => s.url === song.url);
+                            return `<div class="playlist-item" data-index="${originalIndex}"><div class="playlist-title-col">${song.title}</div><div class="playlist-artist-col">${song.artist}</div></div>`;
+                        }).join('') : '<p class="no-results-message">Tidak ada lagu yang cocok.</p>';
+                    };
+                    const loadSong = (index) => { currentSongIndex = index; const song = songs[index]; titleEl.textContent = song.title; artistEl.textContent = song.artist; albumArt.src = song.cover || 'https://via.placeholder.com/80'; audio.src = song.url; };
+                    const playSong = () => { isPlaying = true; audio.play(); playBtn.innerHTML = '<i class="fas fa-pause"></i>'; updateActiveClass(); };
+                    const pauseSong = () => { isPlaying = false; audio.pause(); playBtn.innerHTML = '<i class="fas fa-play"></i>'; updateActiveClass(); };
+                    const updateActiveClass = () => { container.querySelectorAll('.playlist-item').forEach(item => { item.classList.toggle('active', parseInt(item.dataset.index) === currentSongIndex && isPlaying); }); };
+                    const playNextSong = () => { if (currentlyDisplayedSongs.length === 0) return; const currentSongObject = songs[currentSongIndex]; let currentIndexInDisplayedList = currentlyDisplayedSongs.indexOf(currentSongObject); if (currentIndexInDisplayedList === -1) currentIndexInDisplayedList = 0; const nextIndexInDisplayedList = (currentIndexInDisplayedList + 1) % currentlyDisplayedSongs.length; const nextSongObject = currentlyDisplayedSongs[nextIndexInDisplayedList]; loadSong(songs.indexOf(nextSongObject)); playSong(); };
+                    const playPrevSong = () => { if (currentlyDisplayedSongs.length === 0) return; const currentSongObject = songs[currentSongIndex]; let currentIndexInDisplayedList = currentlyDisplayedSongs.indexOf(currentSongObject); if (currentIndexInDisplayedList === -1) currentIndexInDisplayedList = 0; const prevIndexInDisplayedList = (currentIndexInDisplayedList - 1 + currentlyDisplayedSongs.length) % currentlyDisplayedSongs.length; const prevSongObject = currentlyDisplayedSongs[prevIndexInDisplayedList]; loadSong(songs.indexOf(prevSongObject)); playSong(); };
+                    playBtn.addEventListener('click', () => { isPlaying ? pauseSong() : playSong(); });
+                    nextBtn.addEventListener('click', playNextSong);
+                    prevBtn.addEventListener('click', playPrevSong);
+                    audio.addEventListener('ended', playNextSong);
+                    audio.addEventListener('timeupdate', (e) => { const { duration, currentTime } = e.srcElement; if (duration) progressBar.style.width = `${(currentTime / duration) * 100}%`; });
+                    progressContainer.addEventListener('click', (e) => { if (audio.duration) audio.currentTime = (e.offsetX / progressContainer.clientWidth) * audio.duration; });
+                    playlistEl.addEventListener('click', (e) => { const item = e.target.closest('.playlist-item'); if (item) { const index = parseInt(item.dataset.index); if (index === currentSongIndex && isPlaying) { pauseSong(); } else { loadSong(index); playSong(); } } });
+                    [searchInput, categoryFilter, sortOrder].forEach(el => el.addEventListener('change', updateAndRenderPlaylist));
+                    searchInput.addEventListener('keyup', updateAndRenderPlaylist);
+                    populateFilters(); updateAndRenderPlaylist();
+                    if (songs.length > 0) loadSong(0);
+                }
+
+                // Inisialisasi Aplikasi Utama
+                elements.loading.style.display = 'flex';
+                applyPageSettings(LOCAL_DATA.pageSettings);
+                renderAllContent(LOCAL_DATA);
+                updateClock();
+                setInterval(updateClock, 1000);
+                getPlaylistFromGoogleSheets(googleSheetCsvUrl).then(songList => {
+                    setupMusicPlayer(songList);
+                });
+                setupThemeSwitcher();
+                elements.search.addEventListener('input', handleSearch);
+                elements.tabsNav.addEventListener('click', (e) => {
+                    const button = e.target.closest('.tab-button');
+                    if (!button) return;
+                    elements.tabsNav.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    const tab = button.dataset.tab;
+                    elements.contentSections.forEach(section => {
+                        section.classList.toggle('hidden', section.id !== `${tab}-content`);
+                    });
+                    elements.search.value = '';
+                    handleSearch(); 
+                    elements.search.parentElement.classList.toggle('hidden', tab === 'music');
+                });
+                elements.loading.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
