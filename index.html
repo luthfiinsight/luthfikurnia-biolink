@@ -7,95 +7,117 @@
     <meta name="description" content="Halaman Bio Link Pribadi yang dinamis dan modern, diedit langsung dari HTML.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        :root {
-            --bg-gradient-start: #d4fc79; --bg-gradient-end: #96e6a1;
-            --container-bg: rgba(255, 255, 255, 0.65); --primary-text: #1c1e21;
-            --secondary-text: #555; --link-bg: rgba(255, 255, 255, 0.7);
-            --link-hover-bg: rgba(255, 255, 255, 1); --shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            --border-color: rgba(200, 200, 200, 0.5); --border-radius: 16px;
-            --blur-intensity: 10px; --accent-color: #96e6a1;
-        }
-        [data-theme='dark'] {
-            --bg-gradient-start: #0f2027; --bg-gradient-end: #203a43;
-            --container-bg: rgba(20, 20, 20, 0.5); --primary-text: #f0f2f5;
-            --secondary-text: #a0a0a0; --link-bg: rgba(40, 40, 40, 0.6);
-            --link-hover-bg: rgba(50, 50, 50, 0.8); --shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-            --border-color: rgba(255, 255, 255, 0.15);
-        }
-        @keyframes gradient-animation { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Poppins', sans-serif; background: linear-gradient(-45deg, var(--bg-gradient-start), var(--bg-gradient-end), #f8ffae, #fdeb71); background-size: 400% 400%; animation: gradient-animation 15s ease infinite; color: var(--primary-text); display: flex; justify-content: center; padding: 20px; min-height: 100vh; transition: background 0.5s ease; }
-        .container { max-width: 680px; width: 100%; text-align: center; background: var(--container-bg); backdrop-filter: blur(var(--blur-intensity)); -webkit-backdrop-filter: blur(var(--blur-intensity)); border-radius: var(--border-radius); padding: 30px 20px; box-shadow: var(--shadow); border: 1px solid var(--border-color); transition: background 0.3s ease; }
-        .profile-section { margin-bottom: 20px; }
-        .profile-pic { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--border-color); box-shadow: var(--shadow); }
-        .profile-name { font-size: 2rem; font-weight: 700; margin: 15px 0 5px; }
-        .profile-description { font-size: 1rem; color: var(--secondary-text); max-width: 90%; margin: 0 auto 20px auto; }
-        #clock-container { background-color: var(--link-bg); padding: 10px 15px; border-radius: 12px; margin-top: 20px; border: 1px solid var(--border-color); }
-        #clock-time { font-size: 1.8rem; font-weight: 600; letter-spacing: 2px; }
-        #clock-date { font-size: 0.9rem; color: var(--secondary-text); }
-        .loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 1.5rem; z-index: 2000; transition: opacity 0.3s; text-align: center; padding: 20px; }
-        .loading-overlay p { margin-top: 10px; font-size: 1rem; }
-        .theme-switch-wrapper { position: absolute; top: 20px; right: 20px; z-index: 10; }
-        .theme-switch { display: inline-block; height: 28px; position: relative; width: 50px; }
-        .theme-switch input { display: none; }
-        .slider { background-color: rgba(0,0,0,0.2); position: absolute; inset: 0; cursor: pointer; transition: .4s; border-radius: 28px; }
-        .slider:before { background-color: #fff; position: absolute; content: ""; height: 20px; width: 20px; bottom: 4px; left: 4px; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--accent-color); }
-        input:checked + .slider:before { transform: translateX(22px); }
-        .search-wrapper { margin-bottom: 20px; }
-        #search-input { width: 100%; padding: 12px 15px; border-radius: var(--border-radius); border: 1px solid var(--border-color); background-color: var(--link-bg); color: var(--primary-text); font-size: 1rem; }
-        #search-input:focus { outline: none; box-shadow: 0 0 0 2px var(--accent-color); }
-        .tabs-nav { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
-        .tab-button { flex: 1; padding: 10px; background-color: transparent; border: none; border-bottom: 3px solid transparent; color: var(--secondary-text); font-size: 1rem; font-weight: 600; cursor: pointer; transition: color 0.3s, border-color 0.3s; }
-        .tab-button:hover { color: var(--primary-text); }
-        .tab-button.active { color: var(--primary-text); border-bottom-color: var(--accent-color); }
-        .content-section { min-height: 250px; }
-        .content-section.hidden, .category-group.hidden, .hidden { display: none; }
-        .category-group { margin-bottom: 25px; }
-        .category-title { font-size: 1.2rem; font-weight: 600; text-align: left; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 2px solid var(--border-color); }
-        .link-item, .media-item-link { background-color: var(--link-bg); color: var(--primary-text); padding: 15px 20px; border-radius: var(--border-radius); text-decoration: none; font-weight: 600; font-size: 1rem; transition: background-color 0.2s, transform 0.2s; border: 1px solid var(--border-color); display: flex; margin-bottom: 15px; align-items: center; }
-        .link-item:hover, .media-item-link:hover { background-color: var(--link-hover-bg); transform: scale(1.02); }
-        .link-item.disabled { pointer-events: none; opacity: 0.6; }
-        .media-item-link .thumbnail { width: 80px; height: 80px; flex-shrink: 0; border-radius: 10px; object-fit: cover; margin-right: 15px; }
-        .media-item-link .media-title { font-weight: 600; }
-        .socials-container { display: flex; justify-content: center; gap: 25px; margin-top: 30px; }
-        .social-link { font-size: 1.8rem; color: var(--secondary-text); transition: color 0.2s, transform 0.2s; }
-        .social-link:hover { color: var(--primary-text); transform: scale(1.2); }
-        .copyright-footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); color: var(--secondary-text); font-size: 0.9rem; transition: color 0.3s, border-color 0.3s; }
-        #music-content { padding-top: 10px; }
-        .player-core { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-        .album-art { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
-        .song-info { text-align: left; flex-grow: 1; }
-        .song-title { font-weight: 700; font-size: 1.1rem; }
-        .song-artist { color: var(--secondary-text); font-size: 0.9rem; }
-        .player-controls { display: flex; align-items: center; gap: 15px; }
-        .player-controls button { background: none; border: none; color: var(--primary-text); font-size: 1.5rem; cursor: pointer; transition: transform 0.2s, color 0.2s; padding: 5px; }
-        .player-controls button:hover { transform: scale(1.1); color: var(--accent-color); }
-        .progress-container { width: 100%; height: 8px; background-color: var(--link-bg); border-radius: 4px; cursor: pointer; margin-bottom: 15px; }
-        .progress-bar { width: 0; height: 100%; background-color: var(--accent-color); border-radius: 4px; }
-        .playlist-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
-        .playlist-controls input, .playlist-controls select { flex-grow: 1; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--link-bg); color: var(--primary-text); font-size: 0.9rem; min-width: 150px; }
-        .playlist { text-align: left; max-height: 300px; overflow-y: auto; }
-        .no-results-message { color: var(--secondary-text); padding: 20px; text-align: center; }
-        .playlist-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px; cursor: pointer; transition: background-color 0.2s; border-bottom: 1px solid var(--border-color); }
-        .playlist-item:last-child { border-bottom: none; }
-        .playlist-item:hover { background-color: var(--link-hover-bg); }
-        .playlist-item.active { background-color: var(--accent-color); color: #fff; }
-        .playlist-item.active .playlist-artist-col, .playlist-item.active .playlist-title-col { color: rgba(255,255,255,0.85); }
-        .playlist-title-col { font-weight: 600; }
-        .playlist-artist-col { color: var(--secondary-text); }
-        /* Style untuk Halaman Carousel Khusus */
-        .carousel-page-body { padding: 0; margin: 0; display: block; }
-        .fullscreen-carousel-container { position: fixed; inset: 0; background-color: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .fullscreen-carousel-slides { display: flex; height: 100%; width: 100%; transition: transform 0.4s ease-out; }
-        .fullscreen-carousel-slide { min-width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-        .fullscreen-carousel-slide img { max-width: 95%; max-height: 95%; object-fit: contain; user-select: none; pointer-events: none; }
-        .fullscreen-carousel-button { position: absolute; top: 50%; transform: translateY(-50%); background-color: rgba(0, 0, 0, 0.5); color: white; border: none; padding: 15px; font-size: 30px; cursor: pointer; z-index: 100; transition: background-color 0.2s; }
-        .fullscreen-carousel-button:hover { background-color: rgba(0, 0, 0, 0.8); }
-        .fullscreen-carousel-button.prev { left: 10px; }
-        .fullscreen-carousel-button.next { right: 10px; }
-        .fullscreen-carousel-close { position: absolute; top: 15px; right: 20px; color: white; font-size: 40px; text-decoration: none; z-index: 100; font-weight: bold; }
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+      :root {
+          --bg-gradient-start: #d4fc79; --bg-gradient-end: #96e6a1;
+          --container-bg: rgba(255, 255, 255, 0.65); --primary-text: #1c1e21;
+          --secondary-text: #555; --link-bg: rgba(255, 255, 255, 0.7);
+          --link-hover-bg: rgba(255, 255, 255, 1); --shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+          --border-color: rgba(200, 200, 200, 0.5); --border-radius: 16px;
+          --blur-intensity: 10px; --accent-color: #96e6a1;
+      }
+      [data-theme='dark'] {
+          --bg-gradient-start: #0f2027; --bg-gradient-end: #203a43;
+          --container-bg: rgba(20, 20, 20, 0.5); --primary-text: #f0f2f5;
+          --secondary-text: #a0a0a0; --link-bg: rgba(40, 40, 40, 0.6);
+          --link-hover-bg: rgba(50, 50, 50, 0.8); --shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+          --border-color: rgba(255, 255, 255, 0.15);
+      }
+      @keyframes gradient-animation { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Poppins', sans-serif; background: linear-gradient(-45deg, var(--bg-gradient-start), var(--bg-gradient-end), #f8ffae, #fdeb71); background-size: 400% 400%; animation: gradient-animation 15s ease infinite; color: var(--primary-text); display: flex; justify-content: center; padding: 20px; min-height: 100vh; transition: background 0.5s ease; }
+      .container { max-width: 680px; width: 100%; text-align: center; background: var(--container-bg); backdrop-filter: blur(var(--blur-intensity)); -webkit-backdrop-filter: blur(var(--blur-intensity)); border-radius: var(--border-radius); padding: 30px 20px; box-shadow: var(--shadow); border: 1px solid var(--border-color); transition: background 0.3s ease; }
+      .profile-section { margin-bottom: 20px; }
+      .profile-pic { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--border-color); box-shadow: var(--shadow); }
+      .profile-name { font-size: 2rem; font-weight: 700; margin: 15px 0 5px; }
+      .profile-description { font-size: 1rem; color: var(--secondary-text); max-width: 90%; margin: 0 auto 20px auto; }
+      #clock-container { background-color: var(--link-bg); padding: 10px 15px; border-radius: 12px; margin-top: 20px; border: 1px solid var(--border-color); }
+      #clock-time { font-size: 1.8rem; font-weight: 600; letter-spacing: 2px; }
+      #clock-date { font-size: 0.9rem; color: var(--secondary-text); }
+      .loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 1.5rem; z-index: 2000; transition: opacity 0.3s; text-align: center; padding: 20px; }
+      .loading-overlay p { margin-top: 10px; font-size: 1rem; }
+      .theme-switch-wrapper { position: absolute; top: 20px; right: 20px; z-index: 10; }
+      .theme-switch { display: inline-block; height: 28px; position: relative; width: 50px; }
+      .theme-switch input { display: none; }
+      .slider { background-color: rgba(0,0,0,0.2); position: absolute; inset: 0; cursor: pointer; transition: .4s; border-radius: 28px; }
+      .slider:before { background-color: #fff; position: absolute; content: ""; height: 20px; width: 20px; bottom: 4px; left: 4px; transition: .4s; border-radius: 50%; }
+      input:checked + .slider { background-color: var(--accent-color); }
+      input:checked + .slider:before { transform: translateX(22px); }
+      .search-wrapper { margin-bottom: 20px; }
+      #search-input { width: 100%; padding: 12px 15px; border-radius: var(--border-radius); border: 1px solid var(--border-color); background-color: var(--link-bg); color: var(--primary-text); font-size: 1rem; }
+      #search-input:focus { outline: none; box-shadow: 0 0 0 2px var(--accent-color); }
+      .tabs-nav { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
+      .tab-button { flex: 1; padding: 10px; background-color: transparent; border: none; border-bottom: 3px solid transparent; color: var(--secondary-text); font-size: 1rem; font-weight: 600; cursor: pointer; transition: color 0.3s, border-color 0.3s; }
+      .tab-button:hover { color: var(--primary-text); }
+      .tab-button.active { color: var(--primary-text); border-bottom-color: var(--accent-color); }
+      .content-section { min-height: 250px; }
+      .content-section.hidden, .category-group.hidden, .hidden { display: none; }
+      .category-group { margin-bottom: 25px; }
+      .category-title { font-size: 1.2rem; font-weight: 600; text-align: left; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 2px solid var(--border-color); }
+      .link-item, .media-item-link { background-color: var(--link-bg); color: var(--primary-text); padding: 15px 20px; border-radius: var(--border-radius); text-decoration: none; font-weight: 600; font-size: 1rem; transition: background-color 0.2s, transform 0.2s; border: 1px solid var(--border-color); display: flex; margin-bottom: 15px; align-items: center; }
+      .link-item:hover, .media-item-link:hover { background-color: var(--link-hover-bg); transform: scale(1.02); }
+      .link-item.disabled { pointer-events: none; opacity: 0.6; }
+      .media-item-link .thumbnail { width: 80px; height: 80px; flex-shrink: 0; border-radius: 10px; object-fit: cover; margin-right: 15px; }
+      .media-item-link .media-title { font-weight: 600; }
+      .socials-container { display: flex; justify-content: center; gap: 25px; margin-top: 30px; }
+      .social-link { font-size: 1.8rem; color: var(--secondary-text); transition: color 0.2s, transform 0.2s; }
+      .social-link:hover { color: var(--primary-text); transform: scale(1.2); }
+      .copyright-footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); color: var(--secondary-text); font-size: 0.9rem; transition: color 0.3s, border-color 0.3s; }
+      #music-content { padding-top: 10px; }
+      .player-core { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+      .album-art { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+      .song-info { text-align: left; flex-grow: 1; }
+      .song-title { font-weight: 700; font-size: 1.1rem; }
+      .song-artist { color: var(--secondary-text); font-size: 0.9rem; }
+      .player-controls { display: flex; align-items: center; gap: 15px; }
+      .player-controls button { background: none; border: none; color: var(--primary-text); font-size: 1.5rem; cursor: pointer; transition: transform 0.2s, color 0.2s; padding: 5px; }
+      .player-controls button:hover { transform: scale(1.1); color: var(--accent-color); }
+      .progress-container { width: 100%; height: 8px; background-color: var(--link-bg); border-radius: 4px; cursor: pointer; margin-bottom: 15px; }
+      .progress-bar { width: 0; height: 100%; background-color: var(--accent-color); border-radius: 4px; }
+      .playlist-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+      .playlist-controls input, .playlist-controls select { flex-grow: 1; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--link-bg); color: var(--primary-text); font-size: 0.9rem; min-width: 150px; }
+      .playlist { text-align: left; max-height: 300px; overflow-y: auto; }
+      .no-results-message { color: var(--secondary-text); padding: 20px; text-align: center; }
+      .playlist-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px; cursor: pointer; transition: background-color 0.2s; border-bottom: 1px solid var(--border-color); }
+      .playlist-item:last-child { border-bottom: none; }
+      .playlist-item:hover { background-color: var(--link-hover-bg); }
+      .playlist-item.active { background-color: var(--accent-color); color: #fff; }
+      .playlist-item.active .playlist-artist-col, .playlist-item.active .playlist-title-col { color: rgba(255,255,255,0.85); }
+      .playlist-title-col { font-weight: 600; }
+      .playlist-artist-col { color: var(--secondary-text); }
+      /* Style untuk Halaman Carousel Khusus */
+      .carousel-page-body { padding: 0; margin: 0; display: block; }
+      .fullscreen-carousel-container { position: fixed; inset: 0; background-color: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+      .fullscreen-carousel-slides { display: flex; height: 100%; width: 100%; transition: transform 0.4s ease-out; }
+      .fullscreen-carousel-slide { min-width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+      .fullscreen-carousel-slide img { max-width: 95%; max-height: 95%; object-fit: contain; user-select: none; pointer-events: none; }
+      .fullscreen-carousel-button { position: absolute; top: 50%; transform: translateY(-50%); background-color: rgba(0, 0, 0, 0.5); color: white; border: none; padding: 15px; font-size: 30px; cursor: pointer; z-index: 100; transition: background-color 0.2s; }
+      .fullscreen-carousel-button:hover { background-color: rgba(0, 0, 0, 0.8); }
+      .fullscreen-carousel-button.prev { left: 10px; }
+      .fullscreen-carousel-button.next { right: 10px; }
+      .fullscreen-carousel-close { position: absolute; top: 15px; right: 20px; color: white; font-size: 40px; text-decoration: none; z-index: 100; font-weight: bold; }
+
+      /* [BARU] Aturan CSS untuk layar mobile yang lebih kecil */
+      @media (max-width: 480px) {
+          body { padding: 10px; }
+          .container { padding: 20px 15px; }
+          .profile-pic { width: 100px; height: 100px; }
+          .profile-name { font-size: 1.7rem; }
+          .profile-description { font-size: 0.9rem; }
+          .link-item, .media-item-link { font-size: 0.9rem; padding: 12px 15px; }
+          .tab-button { font-size: 0.9rem; padding: 8px 5px; }
+          .category-title { font-size: 1.1rem; }
+          #clock-time { font-size: 1.5rem; letter-spacing: 1px; }
+          #clock-date { font-size: 0.8rem; }
+          .socials-container { gap: 20px; }
+          .social-link { font-size: 1.6rem; }
+          /* Penyesuaian untuk pemutar musik */
+          .album-art { width: 60px; height: 60px; }
+          .song-title { font-size: 1rem; }
+          .song-artist { font-size: 0.85rem; }
+          .player-controls { gap: 10px; }
+          .player-controls button { font-size: 1.3rem; }
+      }
     </style>
 </head>
 <body>
