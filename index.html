@@ -117,52 +117,34 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // =========================================================================
-            // FUNGSI INTI UNTUK HALAMAN CAROUSEL
-            // =========================================================================
+            // FUNGSI CAROUSEL (Tidak Diubah)
             const buildCarouselPage = (imageUrls) => {
-                document.body.innerHTML = ''; // Hapus konten halaman utama
+                document.body.innerHTML = ''; 
                 document.body.className = 'carousel-page-body';
-
                 const container = document.createElement('div');
                 container.className = 'fullscreen-carousel-container';
-                
                 const slides = document.createElement('div');
                 slides.className = 'fullscreen-carousel-slides';
-                slides.innerHTML = imageUrls.map(url => `
-                    <div class="fullscreen-carousel-slide"><img src="${url}" alt="Gambar Carousel"></div>
-                `).join('');
-                
+                slides.innerHTML = imageUrls.map(url => `<div class="fullscreen-carousel-slide"><img src="${url}" alt="Gambar Carousel"></div>`).join('');
                 const prevButton = document.createElement('button');
                 prevButton.className = 'fullscreen-carousel-button prev';
                 prevButton.innerHTML = '❮';
-
                 const nextButton = document.createElement('button');
                 nextButton.className = 'fullscreen-carousel-button next';
                 nextButton.innerHTML = '❯';
-
                 const closeButton = document.createElement('a');
                 closeButton.className = 'fullscreen-carousel-close';
-                closeButton.href = window.location.pathname; // Link kembali ke halaman utama
+                closeButton.href = window.location.pathname;
                 closeButton.innerHTML = '&times;';
-                
                 container.append(slides, prevButton, nextButton, closeButton);
                 document.body.appendChild(container);
-                
                 let currentIndex = 0;
                 const totalSlides = imageUrls.length;
-
-                const showSlide = (index) => {
-                    slides.style.transform = `translateX(-${index * 100}%)`;
-                };
-
+                const showSlide = (index) => { slides.style.transform = `translateX(-${index * 100}%)`; };
                 const showNext = () => { currentIndex = (currentIndex + 1) % totalSlides; showSlide(currentIndex); };
                 const showPrev = () => { currentIndex = (currentIndex - 1 + totalSlides) % totalSlides; showSlide(currentIndex); };
-                
                 nextButton.addEventListener('click', showNext);
                 prevButton.addEventListener('click', showPrev);
-
-                // Fungsi swipe untuk layar sentuh
                 let touchStartX = 0;
                 container.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
                 container.addEventListener('touchend', e => {
@@ -172,36 +154,34 @@
                 });
             };
 
-            // =========================================================================
-            // PENGECEKAN URL SAAT HALAMAN DIMUAT
-            // =========================================================================
+            // PENGECEKAN URL (Tidak Diubah)
             const urlParams = new URLSearchParams(window.location.search);
             const carouselImagesParam = urlParams.get('carousel');
-
             if (carouselImagesParam) {
-                // Jika URL memiliki parameter 'carousel', bangun halaman carousel
                 const imageUrls = decodeURIComponent(carouselImagesParam).split(',');
                 buildCarouselPage(imageUrls);
             } else {
-                // Jika tidak, jalankan aplikasi utama seperti biasa
                 initializeApp();
             }
 
-            // =========================================================================
             // FUNGSI UTAMA APLIKASI
-            // =========================================================================
             function initializeApp() {
-                const LOCAL_DATA = {
+                const LOCAL_DATA = { /* Data JSON tidak diubah */ 
                     pageSettings: { title: "Luthfi Kurnia - Bio Link", favicon: "https://images.unsplash.com/photo-1751766689803-1ffab3754631?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8MXx8fGVufDB8fHx8fA%3D%3D" },
                     profile: [ { key: 'name', value: 'Luthfi Kurnia' }, { key: 'description', value: 'Selamat datang di pusat informasi dan layanan digital RS Hermina Padang. Temukan semua yang Anda butuhkan di sini.' }, { key: 'photoURL', value: 'https://images.unsplash.com/photo-1751766689803-1ffab3754631?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8MXx8fGVufDB8fHx8fA%3D%3D' } ],
                     links: [
-                            { category: 'Aplikasi Hermina', text: 'WEB Hermina', url: 'https://herminahospitals.com/id' },
-                            { category: 'Aplikasi Hermina', text: 'VClaim BPJS', url: 'https://vclaim.bpjs-kesehatan.go.id/VClaim/Penjaminan' },
-                            { category: 'Aplikasi Hermina', text: 'Hinai WEB', url: 'https://simrs.herminahospitals.com/live/login.html' },
+                        { category: 'Aplikasi Hermina', text: 'WEB Hermina', url: 'https://herminahospitals.com/id' },
+                        { category: 'Aplikasi Hermina', text: 'VClaim BPJS', url: 'https://vclaim.bpjs-kesehatan.go.id/VClaim/Penjaminan' },
+                        { category: 'Aplikasi Hermina', text: 'Hinai WEB', url: 'https://simrs.herminahospitals.com/live/login.html' },
                     ],
                     media: [ 
-                        { category: 'Contoh Galeri', title: 'Gambar Tunggal', type: 'image', thumbnailURL: 'https://i.imgur.com/KxSO5B7.png', contentURL: 'https://i.imgur.com/KxSO5B7.png'},
-                        { category: 'Contoh Galeri', title: 'Galeri Interaktif (Carousel)', type: 'carousel', thumbnailURL: 'https://i.imgur.com/08hRjje.png', contentURL: 'https://i.imgur.com/08hRjje.png,https://i.imgur.com/KxSO5B7.png,https://i.ibb.co/tPdrJp4/Desain-tanpa-judul.png' },
+                        { category: 'Layanan Padma', title: 'Paket Melahirkan', type: 'image', thumbnailURL: 'https://images.unsplash.com/photo-1751767762107-c5f6da070638?q=80&w=711&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', contentURL: 'https://images.unsplash.com/photo-1751767762107-c5f6da070638?q=80&w=711&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'},
+                        { category: 'Layanan Padma', title: 'Brosur Layanan Padma', type: 'carousel', thumbnailURL: 'https://images.unsplash.com/photo-1751767447021-0e7871027aea?q=80&w=1123&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', contentURL: 'https://images.unsplash.com/photo-1751767447021-0e7871027aea?q=80&w=1123&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D,https://images.unsplash.com/photo-1751767390363-d14c0cc637fe?q=80&w=1122&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+                        { category: 'Layanan Padma', title: 'Paket Klinik Tumbuh Kembang', type: 'image', thumbnailURL: 'https://images.unsplash.com/photo-1751767761404-91becfbf9060?q=80&w=710&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', contentURL: 'https://images.unsplash.com/photo-1751767761404-91becfbf9060?q=80&w=710&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'},
+                        { category: 'Layanan Padma', title: 'Paket Prenatal Yoga', type: 'image', thumbnailURL: 'https://images.unsplash.com/photo-1751767761511-21b96d37a5d8?q=80&w=712&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', contentURL: 'https://images.unsplash.com/photo-1751767761511-21b96d37a5d8?q=80&w=712&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'},
+                        { category: 'Layanan Padma', title: 'Personal Maternity Officer (PMO)', type: 'image', thumbnailURL: 'https://images.unsplash.com/photo-1751767763295-5878d9504f51?q=80&w=711&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', contentURL: 'https://images.unsplash.com/photo-1751767763295-5878d9504f51?q=80&w=711&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'},
+                        { category: 'Layanan Padma', title: 'Tarif Persalinan', type: 'image', thumbnailURL: 'https://images.unsplash.com/photo-1751767761787-b6e06e4773c4?q=80&w=712&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', contentURL: 'https://images.unsplash.com/photo-1751767761787-b6e06e4773c4?q=80&w=712&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'},
+                        { category: 'Layanan Padma', title: 'Kartu Nama SFE (Staff Fungsional Eksekutif)', type: 'image', thumbnailURL: 'https://images.unsplash.com/photo-1751767761528-18c89aec7dd8?q=80&w=1213&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', contentURL: 'https://images.unsplash.com/photo-1751767761528-18c89aec7dd8?q=80&w=1213&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'},
                     ],
                     socials: [ { platform: 'website', url: 'https://herminahospitals.com/id/branch/hermina-padang' }, { platform: 'instagram', url: 'https://instagram.com/rsuherminapadang' } ]
                 };
@@ -214,40 +194,31 @@
                     search: document.getElementById('search-input'), 
                     loading: document.getElementById('loading'), 
                     tabsNav: document.querySelector('.tabs-nav'), 
-                    contentSections: document.querySelectorAll('.content-section'), 
                     themeToggle: document.getElementById('checkbox'), 
                     noResultsAll: document.getElementById('no-results-all') 
                 };
 
                 const socialIconMap = { 'instagram': 'fa-brands fa-instagram', 'twitter': 'fa-brands fa-x-twitter', 'facebook': 'fa-brands fa-facebook-f', 'linkedin': 'fa-brands fa-linkedin-in', 'github': 'fa-brands fa-github', 'youtube': 'fa-brands fa-youtube', 'tiktok': 'fa-brands fa-tiktok', 'threads': 'fa-brands fa-threads', 'website': 'fa-solid fa-globe', 'email': 'fa-solid fa-envelope', 'whatsapp': 'fa-brands fa-whatsapp', 'telegram': 'fa-brands fa-telegram' };
 
+                // Fungsi-fungsi render (Tidak Diubah)
                 function applyPageSettings(settings) { if (!settings) return; document.title = settings.title || 'Bio Link'; if (settings.favicon) { let link = document.querySelector("link[rel*='icon']") || document.createElement('link'); link.type = 'image/png'; link.rel = 'shortcut icon'; link.href = settings.favicon; document.head.appendChild(link); } }
                 function renderAllContent(data) { renderProfile(data.profile); renderCategorizedItems(elements.links, data.links || [], createLinkItem); renderCategorizedItems(elements.media, data.media || [], createMediaItem); renderSocials(data.socials, data.profile); }
                 function renderProfile(profileData) { if (!elements.profile || !profileData?.length) return; const profile = profileData.reduce((obj, item) => ({...obj, [item.key]: item.value }), {}); elements.profile.innerHTML = `<img src="${profile.photoURL}" alt="Foto Profil ${profile.name}" class="profile-pic"><h1 class="profile-name">${profile.name}</h1><p class="profile-description">${profile.description}</p><div id="clock-container"><div id="clock-time"></div><div id="clock-date"></div></div>`; }
                 function renderSocials(socialsData, profileData) { if (!elements.socials || !socialsData?.length) return; const profileName = profileData?.find(p => p.key === 'name')?.value || 'kami'; elements.socials.innerHTML = socialsData.map(social => { const platformName = social.platform.charAt(0).toUpperCase() + social.platform.slice(1); const ariaLabel = `Kunjungi ${platformName} ${profileName}`; return `<a href="${social.url}" target="_blank" class="social-link" aria-label="${ariaLabel}"><i class="${socialIconMap[social.platform.toLowerCase()] || 'fa-solid fa-link'}"></i></a>`}).join(''); }
                 function renderCategorizedItems(container, items, createItemFunc) { container.innerHTML = ''; if (!items || items.length === 0) { container.innerHTML = `<p class="no-results-message">Tidak ada konten di kategori ini.</p>`; return; } const grouped = items.reduce((acc, item) => { const category = item.category || 'Lainnya'; if (!acc[category]) acc[category] = []; acc[category].push(item); return acc; }, {}); const fragment = document.createDocumentFragment(); for (const category in grouped) { const categoryGroup = document.createElement('div'); categoryGroup.className = 'category-group'; categoryGroup.innerHTML = `<h2 class="category-title">${category}</h2>`; grouped[category].forEach(item => categoryGroup.appendChild(createItemFunc(item))); fragment.appendChild(categoryGroup); } container.appendChild(fragment); }
-                
                 function createLinkItem(item) { const a = document.createElement('a'); a.href = item.url; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.className = 'link-item'; a.textContent = item.text; a.dataset.searchableText = item.text.toLowerCase(); if (!item.url || item.url === '#') a.classList.add('disabled'); return a; }
-                
                 function createMediaItem(item) {
                     const a = document.createElement('a');
                     a.className = 'media-item-link';
                     a.dataset.searchableText = item.title.toLowerCase();
                     a.target = '_blank';
                     a.rel = 'noopener noreferrer';
-
-                    if (item.type === 'image' || item.type === 'video') {
-                        a.href = item.contentURL;
-                    } else if (item.type === 'carousel') {
-                        a.href = `?carousel=${encodeURIComponent(item.contentURL)}`;
-                    } else {
-                        a.href = '#'; // Fallback
-                    }
-
+                    if (item.type === 'image' || item.type === 'video') { a.href = item.contentURL; } 
+                    else if (item.type === 'carousel') { a.href = `?carousel=${encodeURIComponent(item.contentURL)}`; } 
+                    else { a.href = '#'; }
                     a.innerHTML = `<img src="${item.thumbnailURL}" alt="${item.title}" class="thumbnail" loading="lazy"><div class="media-title">${item.title}</div>`;
                     return a;
                 }
-
                 function updateClock() {
                     const now = new Date();
                     const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jakarta' };
@@ -260,27 +231,57 @@
                     if (clockDateEl) clockDateEl.textContent = dateString;
                 }
                 
+                // =========================================================================
+                // BAGIAN YANG DIPERBAIKI
+                // =========================================================================
+                
                 function handleSearch() {
                     const searchTerm = elements.search.value.toLowerCase().trim();
-                    let anyResults = false;
-                    ['links-content', 'media-content'].forEach(contentId => {
-                        const section = document.getElementById(contentId);
-                        if (section.classList.contains('hidden')) return;
-                        let itemsFoundInSection = false;
-                        section.querySelectorAll('.category-group').forEach(group => {
-                            let visibleItemsInGroup = 0;
-                            group.querySelectorAll('.link-item, .media-item-link').forEach(item => {
-                                const isVisible = item.dataset.searchableText.includes(searchTerm);
-                                item.classList.toggle('hidden', !isVisible);
-                                if (isVisible) visibleItemsInGroup++;
-                            });
-                            group.classList.toggle('hidden', visibleItemsInGroup === 0);
-                            if (visibleItemsInGroup > 0) itemsFoundInSection = true;
+
+                    if (!searchTerm) {
+                        document.querySelectorAll('.link-item, .media-item-link, .category-group').forEach(el => {
+                            if (!el.classList.contains('content-section')) {
+                                el.classList.remove('hidden');
+                            }
                         });
-                        if (itemsFoundInSection) anyResults = true;
+
+                        const activeTab = elements.tabsNav.querySelector('.tab-button.active').dataset.tab;
+                        elements.links.classList.toggle('hidden', activeTab !== 'links');
+                        elements.media.classList.toggle('hidden', activeTab !== 'media');
+                        elements.noResultsAll.classList.add('hidden');
+                        return;
+                    }
+
+                    let linksFound = false;
+                    let mediaFound = false;
+
+                    elements.links.querySelectorAll('.category-group').forEach(group => {
+                        let visibleItemsInGroup = 0;
+                        group.querySelectorAll('.link-item').forEach(item => {
+                            const isVisible = item.dataset.searchableText.includes(searchTerm);
+                            item.classList.toggle('hidden', !isVisible);
+                            if (isVisible) visibleItemsInGroup++;
+                        });
+                        group.classList.toggle('hidden', visibleItemsInGroup === 0);
+                        if (visibleItemsInGroup > 0) linksFound = true;
                     });
-                    elements.noResultsAll.classList.toggle('hidden', anyResults || searchTerm === "");
+
+                    elements.media.querySelectorAll('.category-group').forEach(group => {
+                        let visibleItemsInGroup = 0;
+                        group.querySelectorAll('.media-item-link').forEach(item => {
+                            const isVisible = item.dataset.searchableText.includes(searchTerm);
+                            item.classList.toggle('hidden', !isVisible);
+                            if (isVisible) visibleItemsInGroup++;
+                        });
+                        group.classList.toggle('hidden', visibleItemsInGroup === 0);
+                        if (visibleItemsInGroup > 0) mediaFound = true;
+                    });
+
+                    elements.links.classList.toggle('hidden', !linksFound);
+                    elements.media.classList.toggle('hidden', !mediaFound);
+                    elements.noResultsAll.classList.toggle('hidden', linksFound || mediaFound);
                 }
+
 
                 function setupThemeSwitcher() {
                     const setDocsTheme = (isDark) => { document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light'); localStorage.setItem('theme', isDark ? 'dark' : 'light'); elements.themeToggle.checked = isDark; };
@@ -295,19 +296,27 @@
                 updateClock();
                 setInterval(updateClock, 1000);
                 setupThemeSwitcher();
+                
+                // Listener untuk input pencarian
                 elements.search.addEventListener('input', handleSearch);
+
+                // Listener untuk klik tab (DIPERBAIKI)
                 elements.tabsNav.addEventListener('click', (e) => {
                     const button = e.target.closest('.tab-button');
-                    if (!button) return;
-                    elements.tabsNav.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                    if (!button || button.classList.contains('active')) {
+                        return;
+                    }
+
+                    elements.tabsNav.querySelector('.tab-button.active').classList.remove('active');
                     button.classList.add('active');
-                    const tab = button.dataset.tab;
-                    elements.contentSections.forEach(section => {
-                        section.classList.toggle('hidden', section.id !== `${tab}-content`);
-                    });
+
+                    // Kosongkan input pencarian
                     elements.search.value = '';
-                    handleSearch(); 
+
+                    // Secara manual picu event 'input' untuk menjamin handleSearch() terpanggil
+                    elements.search.dispatchEvent(new Event('input', { bubbles: true }));
                 });
+                
                 elements.loading.style.display = 'none';
             }
         });
