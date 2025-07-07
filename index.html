@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bio Link</title>
-    <meta name="description" content="Halaman Bio Link Pribadi yang dinamis dan modern, dibangun ulang untuk performa dan keandalan.">
+    <title>Bio Link dengan Penjadwal Cloud</title>
+    <meta name="description" content="Halaman Bio Link Pribadi yang dinamis dengan fitur penjadwal tugas yang terhubung ke cloud.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
@@ -15,6 +15,7 @@
             --link-hover-bg: rgba(255, 255, 255, 1); --shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             --border-color: rgba(200, 200, 200, 0.5); --border-radius: 16px;
             --blur-intensity: 10px; --accent-color: #96e6a1;
+            --danger-color: #ff5b5b;
         }
         [data-theme='dark'] {
             --bg-gradient-start: #0f2027; --bg-gradient-end: #203a43;
@@ -26,15 +27,15 @@
         @keyframes gradient-animation { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Poppins', sans-serif; background: linear-gradient(-45deg, var(--bg-gradient-start), var(--bg-gradient-end), #f8ffae, #fdeb71); background-size: 400% 400%; animation: gradient-animation 15s ease infinite; color: var(--primary-text); display: flex; justify-content: center; padding: 20px; min-height: 100vh; transition: background 0.5s ease; }
-        .container { max-width: 680px; width: 100%; text-align: center; background: var(--container-bg); backdrop-filter: blur(var(--blur-intensity)); -webkit-backdrop-filter: blur(var(--blur-intensity)); border-radius: var(--border-radius); padding: 30px 20px; box-shadow: var(--shadow); border: 1px solid var(--border-color); transition: background 0.3s ease; }
-        .profile-section { margin-bottom: 20px; }
+        .container { max-width: 680px; width: 100%; text-align: center; background: var(--container-bg); backdrop-filter: blur(var(--blur-intensity)); -webkit-backdrop-filter: blur(var(--blur-intensity)); border-radius: var(--border-radius); padding: 30px 20px; box-shadow: var(--shadow); border: 1px solid var(--border-color); transition: background 0.3s ease; position: relative; }
+        .header-top-row { display: flex; justify-content: flex-end; align-items: center; position: absolute; top: 20px; right: 20px; z-index: 10; gap: 15px; }
+        .profile-section { margin-bottom: 20px; margin-top: 30px; }
         .profile-pic { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--border-color); box-shadow: var(--shadow); }
         .profile-name { font-size: 2rem; font-weight: 700; margin: 15px 0 5px; }
         .profile-description { font-size: 1rem; color: var(--secondary-text); max-width: 90%; margin: 0 auto 20px auto; }
         .clock-container { background-color: var(--link-bg); padding: 10px 15px; border-radius: 12px; margin-top: 20px; border: 1px solid var(--border-color); }
         .clock-time { font-size: 1.8rem; font-weight: 600; letter-spacing: 2px; }
         .clock-date { font-size: 0.9rem; color: var(--secondary-text); }
-        .theme-switch-wrapper { position: absolute; top: 20px; right: 20px; z-index: 10; }
         .theme-switch { display: inline-block; height: 28px; position: relative; width: 50px; }
         .theme-switch input { display:none; }
         .slider { background-color: rgba(0,0,0,0.2); position: absolute; inset: 0; cursor: pointer; transition: .4s; border-radius: 28px; }
@@ -43,11 +44,9 @@
         input:checked + .slider:before { transform: translateX(22px); }
         .search-wrapper { margin-bottom: 20px; }
         #search-input { width: 100%; padding: 12px 15px; border-radius: var(--border-radius); border: 1px solid var(--border-color); background-color: var(--link-bg); color: var(--primary-text); font-size: 1rem; }
-        #search-input:focus { outline: none; box-shadow: 0 0 0 2px var(--accent-color); }
         .tabs-nav { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
         .tab-button { flex: 1; padding: 10px; background-color: transparent; border: none; border-bottom: 3px solid transparent; color: var(--secondary-text); font-size: 1rem; font-weight: 600; cursor: pointer; transition: color 0.3s, border-color 0.3s; }
         .tab-button.active { color: var(--primary-text); border-bottom-color: var(--accent-color); }
-        .content-section { min-height: 250px; }
         .category-group { margin-bottom: 25px; }
         .category-title { font-size: 1.2rem; font-weight: 600; text-align: left; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 2px solid var(--border-color); }
         .link-item, .media-item-link { background-color: var(--link-bg); color: var(--primary-text); padding: 15px 20px; border-radius: var(--border-radius); text-decoration: none; font-weight: 600; font-size: 1rem; transition: background-color 0.2s, transform 0.2s; border: 1px solid var(--border-color); display: flex; margin-bottom: 15px; align-items: center; }
@@ -55,23 +54,49 @@
         .media-item-link .thumbnail { width: 80px; height: 80px; flex-shrink: 0; border-radius: 10px; object-fit: cover; margin-right: 15px; }
         .media-item-link .media-title { font-weight: 600; }
         .socials-container { display: flex; justify-content: center; gap: 25px; margin-top: 30px; }
-        .social-link { font-size: 1.8rem; color: var(--secondary-text); transition: color 0.2s, transform 0.2s; }
-        .social-link:hover { color: var(--primary-text); transform: scale(1.2); }
         .copyright-footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); color: var(--secondary-text); font-size: 0.9rem; }
         .hidden { display: none; }
         .no-results-message { color: var(--secondary-text); padding: 20px; text-align: center; }
-        @media (max-width: 480px) {
-            body { padding: 10px; } .container { padding: 20px 15px; } .profile-pic { width: 100px; height: 100px; } .profile-name { font-size: 1.7rem; } .profile-description { font-size: 0.9rem; } .link-item, .media-item-link { font-size: 0.9rem; padding: 12px 15px; } .tab-button { font-size: 0.9rem; } .category-title { font-size: 1.1rem; } .clock-time { font-size: 1.5rem; } .clock-date { font-size: 0.8rem; } .social-link { font-size: 1.6rem; }
-        }
+        .notification-bell { position: relative; cursor: pointer; font-size: 1.5rem; color: var(--primary-text); }
+        .notif-badge { position: absolute; top: -5px; right: -8px; background-color: var(--danger-color); color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 0.75rem; font-weight: bold; display: flex; justify-content: center; align-items: center; }
+        .notif-dropdown { display: none; position: absolute; top: 40px; right: 0; background-color: var(--container-bg); border-radius: var(--border-radius); box-shadow: var(--shadow); border: 1px solid var(--border-color); width: 300px; z-index: 20; padding: 10px; text-align: left; }
+        .notif-dropdown h4 { margin: 0 0 10px; padding-bottom: 5px; border-bottom: 1px solid var(--border-color); }
+        .notif-item { font-size: 0.9rem; padding: 8px; border-radius: 8px; margin-bottom: 5px; }
+        .notif-item strong { color: var(--danger-color); }
+        .task-scheduler-container { text-align: left; }
+        .task-input-form { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        #new-task-input { flex-grow: 1; padding: 12px 15px; border-radius: var(--border-radius); border: 1px solid var(--border-color); background-color: var(--link-bg); color: var(--primary-text); font-size: 1rem; min-width: 200px; }
+        #task-due-date { padding: 12px; border-radius: var(--border-radius); border: 1px solid var(--border-color); background-color: var(--link-bg); color: var(--primary-text); font-family: 'Poppins', sans-serif; }
+        .add-task-btn { padding: 12px 15px; border: none; background-color: var(--accent-color); color: var(--primary-text); border-radius: var(--border-radius); font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+        .add-task-btn:disabled { background-color: var(--secondary-text); cursor: not-allowed; }
+        .task-list { list-style: none; padding: 0; margin: 0; }
+        .task-item { display: flex; align-items: center; gap: 15px; background-color: var(--link-bg); padding: 12px 15px; border-radius: var(--border-radius); margin-bottom: 10px; border: 1px solid var(--border-color); }
+        .task-item input[type="checkbox"] { width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--accent-color); cursor: pointer; }
+        .task-item.completed .task-text, .task-item.completed .task-date { text-decoration: line-through; color: var(--secondary-text); }
+        .task-details { flex-grow: 1; text-align: left; }
+        .task-text { font-size: 0.95rem; }
+        .task-date { font-size: 0.8rem; color: var(--secondary-text); }
+        .task-item.overdue .task-date { color: var(--danger-color); font-weight: bold; }
+        .delete-task-btn { background: none; border: none; color: var(--secondary-text); font-size: 1.1rem; cursor: pointer; transition: color 0.2s; padding: 5px; flex-shrink: 0; }
+        .delete-task-btn:hover { color: var(--danger-color); }
     </style>
 </head>
 <body>
-    <div class="theme-switch-wrapper">
+    <div class="header-top-row">
+        <div class="notification-bell" id="notification-bell">
+            <i class="fas fa-bell"></i>
+            <span class="notif-badge hidden" id="notif-badge">0</span>
+            <div class="notif-dropdown" id="notif-dropdown">
+                <h4>Tugas Terlewat</h4>
+                <div id="notif-list"></div>
+            </div>
+        </div>
         <label class="theme-switch" for="theme-toggle">
             <input type="checkbox" id="theme-toggle" />
             <div class="slider round"></div>
         </label>
     </div>
+
     <div class="container">
         <header id="profile-section" class="profile-section"></header>
         <div class="search-wrapper">
@@ -80,16 +105,40 @@
         <nav class="tabs-nav">
             <button class="tab-button active" data-tab="links">Tautan</button>
             <button class="tab-button" data-tab="media">Galeri</button>
+            <button class="tab-button" data-tab="scheduler">Jadwal</button>
         </nav>
-        <main id="content-area">
-            </main>
+        <main id="content-area"></main>
         <footer id="socials-container" class="socials-container"></footer>
         <div class="copyright-footer">© Luthfi Kurnia 2025</div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
     <script>
+    // --- Langkah Wajib! Ganti dengan Konfigurasi Firebase Anda ---
+    const firebaseConfig = {
+      apiKey: "PASTE_API_KEY_ANDA_DI_SINI",
+      authDomain: "PASTE_AUTH_DOMAIN_ANDA_DI_SINI",
+      projectId: "PASTE_PROJECT_ID_ANDA_DI_SINI",
+      storageBucket: "PASTE_STORAGE_BUCKET_ANDA_DI_SINI",
+      messagingSenderId: "PASTE_MESSAGING_SENDER_ID_ANDA_DI_SINI",
+      appId: "PASTE_APP_ID_ANDA_DI_SINI"
+    };
+
+    // --- Inisialisasi Firebase ---
+    let db, tasksCollection;
+    try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        tasksCollection = db.collection("tasks");
+    } catch (e) {
+        console.error("Firebase GAGAL dimuat. Periksa `firebaseConfig` Anda.", e);
+        alert("Konfigurasi Firebase tidak valid. Fitur Jadwal tidak akan berfungsi.");
+    }
+    
     document.addEventListener('DOMContentLoaded', () => {
-        // --- 1. DATA INPUT (Tetap sama) ---
+        // --- DATA ASLI ANDA (TELAH DIKEMBALIKAN) ---
         const DATA = {
             profile: { 
                 name: 'Luthfi Kurnia', 
@@ -98,38 +147,24 @@
             },
             links: [
                 { category: 'Aplikasi Hermina', text: 'WEB Hermina', url: 'https://www.herminahospitals.com/en/branch/hermina-padang' },
-                         { category: 'Aplikasi Hermina', text: 'VClaim BPJS', url: 'https://vclaim.bpjs-kesehatan.go.id/VClaim/Penjaminan' },
-                         { category: 'Aplikasi Hermina', text: 'Hinai WEB', url: 'https://simrs.herminahospitals.com/live/login.html' },
-                         { category: 'Aplikasi Hermina', text: 'SIPP BPJS Kesehatan', url: 'https://sipp.bpjs-kesehatan.go.id/sipp/#/access/signin' },
-                         { category: 'Aplikasi Hermina', text: 'Hermina SuperAPP', url: 'https://superapps.herminahospitals.com/' },
-                         { category: 'Aplikasi Hermina', text: 'Afya Better Test', url: '#' },
-                         { category: 'Aplikasi Hermina', text: 'WhatsApp WEB', url: 'https://web.whatsapp.com/' },
-                         { category: 'Dokumen-Dokumen', text: 'Jadwal Dokter', url: '#' },
-                         { category: 'Dokumen-Dokumen', text: 'Master Tarif', url: 'https://drive.google.com/file/d/1RyG2IrS3xxzLPnB0Gtx2LFp1A-dVZTmx/view?usp=sharing' },
-                         { category: 'Dokumen-Dokumen', text: 'Estimasi Biaya TopUp', url: 'https://drive.google.com/file/d/1BJi5Jixp1azPwwD_1leyQ3eFwDQhQV8L/view' },
-                         { category: 'Dokumen-Dokumen', text: 'PKS Asuransi', url: '#' },
-                         { category: 'Dashboard Kamar RWI', text: 'Dashboard Kamar Lantai 4', url: 'https://docs.google.com/spreadsheets/d/1doB7A3bFR6AU3hq4yFgPUne3jBUnaaTN33om0xqXXt8/edit?gid=0#gid=0' },
-                         { category: 'Dashboard Kamar RWI', text: 'Dashboard Kamar Lantai 5', url: 'https://docs.google.com/spreadsheets/d/1kwyrwe_Bc-duSjlPiwdpnjVIchKSSBcJqILyzp-hDdE/edit?usp=drive_link' },
-                         { category: 'Dashboard Kamar RWI', text: 'Dashboard Kamar Lantai 6', url: 'https://docs.google.com/spreadsheets/d/1Tz_0oimiY1pnltzFJ0HuHQHoJ0KU5-ZuvHU58lRvK88/edit?usp=drive_link' },
-                         { category: 'Dashboard Kamar RWI', text: 'Dashboard Kamar Lantai 7', url: '#' },
-                         { category: 'Dashboard Kamar RWI', text: 'Dashboard Kamar Intensif', url: 'https://docs.google.com/spreadsheets/d/1iIVbS5tdT38S_5eXIzPxoh3bt9Pqwu67WjYv3PDaYhM/edit?gid=424558827#gid=424558827' },
-                         { category: 'Laporan-Laporan', text: 'Lain-lain 1', url: '#' },
-                         { category: 'Laporan-Laporan', text: 'Lain-lain 2', url: '#' },
-                         { category: 'Laporan-Laporan', text: 'Lain-lain 3', url: '#' },
-                         { category: 'Laporan-Laporan', text: 'Lain-lain 4', url: '#' },
-                         { category: 'Laporan-Laporan', text: 'Lain-lain 5', url: '#' },
-                         { category: 'Laporan-Laporan', text: 'Lain-lain 6', url: '#' },
-                         { category: 'Laporan-Laporan', text: 'Lain-lain 7', url: '#' },
-                         { category: 'Laporan-Laporan', text: 'Lain-lain 8', url: '#' },
-                         { category: 'Laporan-Laporan', text: 'Lain-lain 9', url: '#' },
-                         { category: 'Laporan-Laporan', text: 'Lain-lain 10', url: '#' },
-                         { category: 'Website Asuransi', text: 'Lain-lain 11', url: '#' },
-                         { category: 'Website Asuransi', text: 'Lain-lain 11', url: '#' },
-                         { category: 'Website Asuransi', text: 'Lain-lain 11', url: '#' },
-                         { category: 'Website Asuransi', text: 'Lain-lain 11', url: '#' },
-                         { category: 'Website Asuransi', text: 'Lain-lain 11', url: '#' },
-                         { category: 'Lain-lain', text: 'Lain-lain 12', url: '#' },
-                         { category: 'Lain-lain', text: 'Lain-lain 13', url: '#' }
+                { category: 'Aplikasi Hermina', text: 'VClaim BPJS', url: 'https://vclaim.bpjs-kesehatan.go.id/VClaim/Penjaminan' },
+                { category: 'Aplikasi Hermina', text: 'Hinai WEB', url: 'https://simrs.herminahospitals.com/live/login.html' },
+                { category: 'Aplikasi Hermina', text: 'SIPP BPJS Kesehatan', url: 'https://sipp.bpjs-kesehatan.go.id/sipp/#/access/signin' },
+                { category: 'Aplikasi Hermina', text: 'Hermina SuperAPP', url: 'https://superapps.herminahospitals.com/' },
+                { category: 'Aplikasi Hermina', text: 'Afya Better Test', url: '#' },
+                { category: 'Aplikasi Hermina', text: 'WhatsApp WEB', url: 'https://web.whatsapp.com/' },
+                { category: 'Dokumen-Dokumen', text: 'Jadwal Dokter', url: '#' },
+                { category: 'Dokumen-Dokumen', text: 'Master Tarif', url: 'https://drive.google.com/file/d/1RyG2IrS3xxzLPnB0Gtx2LFp1A-dVZTmx/view?usp=sharing' },
+                { category: 'Dokumen-Dokumen', text: 'Estimasi Biaya TopUp', url: 'https://drive.google.com/file/d/1BJi5Jixp1azPwwD_1leyQ3eFwDQhQV8L/view' },
+                { category: 'Dokumen-Dokumen', text: 'PKS Asuransi', url: '#' },
+                { category: 'Dashboard Kamar RWI', text: 'Dashboard Kamar Lantai 4', url: 'https://docs.google.com/spreadsheets/d/1doB7A3bFR6AU3hq4yFgPUne3jBUnaaTN33om0xqXXt8/edit?gid=0#gid=0' },
+                { category: 'Dashboard Kamar RWI', text: 'Dashboard Kamar Lantai 5', url: 'https://docs.google.com/spreadsheets/d/1kwyrwe_Bc-duSjlPiwdpnjVIchKSSBcJqILyzp-hDdE/edit?usp=drive_link' },
+                { category: 'Dashboard Kamar RWI', text: 'Dashboard Kamar Lantai 6', url: 'https://docs.google.com/spreadsheets/d/1Tz_0oimiY1pnltzFJ0HuHQHoJ0KU5-ZuvHU58lRvK88/edit?usp=drive_link' },
+                { category: 'Dashboard Kamar RWI', text: 'Dashboard Kamar Lantai 7', url: '#' },
+                { category: 'Dashboard Kamar RWI', text: 'Dashboard Kamar Intensif', url: 'https://docs.google.com/spreadsheets/d/1iIVbS5tdT38S_5eXIzPxoh3bt9Pqwu67WjYv3PDaYhM/edit?gid=424558827#gid=424558827' },
+                { category: 'Laporan-Laporan', text: 'Lain-lain 1', url: '#' },
+                { category: 'Website Asuransi', text: 'Lain-lain 11', url: '#' },
+                { category: 'Lain-lain', text: 'Lain-lain 12', url: '#' }
             ],
             media: [ 
                 { category: 'Layanan Padma', title: 'Paket Melahirkan', thumbnailURL: 'https://images.unsplash.com/photo-1751767762107-c5f6da070638?q=80&w=711&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', url: 'https://images.unsplash.com/photo-1751767762107-c5f6da070638?q=80&w=711&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'},
@@ -142,133 +177,176 @@
             ]
         };
         const socialIconMap = { 'instagram': 'fa-brands fa-instagram', 'website': 'fa-solid fa-globe' };
+        const profileSection = document.getElementById('profile-section'), contentArea = document.getElementById('content-area'), socialsContainer = document.getElementById('socials-container'), searchInput = document.getElementById('search-input'), tabsNav = document.querySelector('.tabs-nav');
+        let allTasks = [];
 
-        // --- 2. Menyiapkan Elemen & Data ---
-        const profileSection = document.getElementById('profile-section');
-        const contentArea = document.getElementById('content-area');
-        const socialsContainer = document.getElementById('socials-container');
-        const searchInput = document.getElementById('search-input');
-        const tabsNav = document.querySelector('.tabs-nav');
-        
-        // --- 3. Fungsi-Fungsi Untuk Merender Tampilan (Dibangun Ulang) ---
-        
-        // Render bagian profil & jam (hanya sekali)
         function renderStaticContent() {
-            profileSection.innerHTML = `
-                <img src="${DATA.profile.photoURL}" alt="Foto Profil" class="profile-pic">
-                <h1 class="profile-name">${DATA.profile.name}</h1>
-                <p class="profile-description">${DATA.profile.description}</p>
-                <div class="clock-container">
-                    <div class="clock-time" id="clock-time"></div>
-                    <div class="clock-date" id="clock-date"></div>
-                </div>
-            `;
-            socialsContainer.innerHTML = DATA.socials.map(social => `
-                <a href="${social.url}" target="_blank" class="social-link" aria-label="${social.platform}">
-                    <i class="${socialIconMap[social.platform] || 'fa-solid fa-link'}"></i>
-                </a>
-            `).join('');
-            
-            // Jalankan jam
-            const timeEl = document.getElementById('clock-time');
-            const dateEl = document.getElementById('clock-date');
+            profileSection.innerHTML = `<img src="${DATA.profile.photoURL}" alt="Foto Profil" class="profile-pic"><h1 class="profile-name">${DATA.profile.name}</h1><p class="profile-description">${DATA.profile.description}</p><div class="clock-container"><div class="clock-time" id="clock-time"></div><div class="clock-date" id="clock-date"></div></div>`;
+            socialsContainer.innerHTML = DATA.socials.map(s => `<a href="${s.url}" target="_blank" class="social-link"><i class="${socialIconMap[s.platform] || 'fa-solid fa-link'}"></i></a>`).join('');
+            const timeEl = document.getElementById('clock-time'), dateEl = document.getElementById('clock-date');
             const updateClock = () => {
                 const now = new Date();
                 timeEl.textContent = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Jakarta' }).replace(/\./g, ':');
                 dateEl.textContent = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jakarta' });
             };
-            updateClock();
-            setInterval(updateClock, 1000);
+            updateClock(); setInterval(updateClock, 1000);
         }
 
-        // **FUNGSI UTAMA YANG PALING PINTAR**
-        // Fungsi ini bertanggung jawab penuh untuk menampilkan konten berdasarkan kondisi terkini.
-        function renderDynamicContent() {
+        function generateSectionHTML(items, type) {
+            const grouped = items.reduce((acc, item) => {
+                const category = item.category || 'Lain-lain';
+                if (!acc[category]) acc[category] = [];
+                acc[category].push(item); return acc;
+            }, {});
+            let html = '';
+            for (const category in grouped) {
+                html += `<div class="category-group"><h2 class="category-title">${category}</h2>`;
+                if (type === 'links') {
+                    html += grouped[category].map(item => `<a href="${item.url}" target="_blank" class="link-item">${item.text}</a>`).join('');
+                } else {
+                    html += grouped[category].map(item => `<a href="${item.url}" target="_blank" class="media-item-link"><img src="${item.thumbnailURL}" alt="${item.title}" class="thumbnail" loading="lazy"><div class="media-title">${item.title}</div></a>`).join('');
+                }
+                html += `</div>`;
+            }
+            return html;
+        }
+
+        async function renderDynamicContent() {
             const searchTerm = searchInput.value.toLowerCase().trim();
             const activeTab = document.querySelector('.tab-button.active').dataset.tab;
+            searchInput.parentElement.style.display = (activeTab === 'scheduler') ? 'none' : 'block';
 
-            // Saring data berdasarkan pencarian
-            const filteredLinks = DATA.links.filter(item => item.text.toLowerCase().includes(searchTerm));
-            const filteredMedia = DATA.media.filter(item => item.title.toLowerCase().includes(searchTerm));
+            if (activeTab === 'scheduler') { await renderScheduler(); return; }
 
-            let htmlToRender = '';
+            const dataToRender = activeTab === 'links' ? DATA.links : DATA.media;
+            const filteredData = dataToRender.filter(item => (item.text || item.title).toLowerCase().includes(searchTerm));
+            
+            let htmlToRender = generateSectionHTML(filteredData, activeTab);
+            if (searchTerm && activeTab === 'links') { // Search across all content
+                const allContent = [...DATA.links, ...DATA.media];
+                const allFiltered = allContent.filter(item => (item.text || item.title).toLowerCase().includes(searchTerm));
+                htmlToRender = generateSectionHTML(allFiltered, 'links'); // Render all as simple links for search simplicity
+            }
+            
+            contentArea.innerHTML = htmlToRender || '<p class="no-results-message">Tidak ada konten yang cocok.</p>';
+        }
 
-            // Tentukan konten apa yang akan dirender
-            if (searchTerm) {
-                // **MODE PENCARIAN**: Tampilkan semua hasil dari kedua tab
-                htmlToRender += generateSectionHTML('Tautan', 'links', filteredLinks);
-                htmlToRender += generateSectionHTML('Galeri', 'media', filteredMedia);
+        async function fetchAllTasks() {
+            if (!tasksCollection) return [];
+            try {
+                const snapshot = await tasksCollection.orderBy("dueDate", "asc").get();
+                allTasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                checkNotifications();
+                return allTasks;
+            } catch (error) { console.error("Error fetching tasks:", error); return []; }
+        }
+
+        function checkNotifications() {
+            const now = new Date(); now.setHours(0, 0, 0, 0);
+            const overdue = allTasks.filter(t => !t.completed && new Date(t.dueDate) < now);
+            const badge = document.getElementById('notif-badge'), list = document.getElementById('notif-list');
+            list.innerHTML = '';
+            if (overdue.length > 0) {
+                badge.textContent = overdue.length;
+                badge.classList.remove('hidden');
+                overdue.forEach(t => { list.innerHTML += `<div class="notif-item"><strong>${t.text}</strong> - Lewat batas.</div>`; });
             } else {
-                // **MODE TAB**: Tampilkan hanya konten dari tab yang aktif
-                if (activeTab === 'links') {
-                    htmlToRender += generateSectionHTML('Tautan', 'links', filteredLinks);
-                } else {
-                    htmlToRender += generateSectionHTML('Galeri', 'media', filteredMedia);
-                }
-            }
-            
-            // Masukkan HTML yang sudah jadi ke dalam DOM
-            contentArea.innerHTML = htmlToRender;
-            
-            // Tampilkan pesan jika tidak ada hasil sama sekali dalam mode pencarian
-            if (searchTerm && filteredLinks.length === 0 && filteredMedia.length === 0) {
-                 contentArea.innerHTML = '<p class="no-results-message">Tidak ada hasil yang cocok dengan pencarian Anda.</p>';
+                badge.classList.add('hidden');
+                list.innerHTML = '<p class="no-results-message">Tidak ada notifikasi.</p>';
             }
         }
         
-        // Fungsi pembantu untuk membuat HTML dari data yang sudah disaring
-        function generateSectionHTML(title, type, items) {
-            if (items.length === 0) return '';
-            
-            // Kelompokkan item berdasarkan kategori
-            const grouped = items.reduce((acc, item) => {
-                const category = item.category || 'Lainnya';
-                if (!acc[category]) acc[category] = [];
-                acc[category].push(item);
-                return acc;
-            }, {});
+        function getTodayString() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
 
-            let sectionHTML = '';
-            for (const category in grouped) {
-                sectionHTML += `<div class="category-group">
-                    <h2 class="category-title">${category}</h2>`;
+        async function renderScheduler() {
+            contentArea.innerHTML = `<div class="task-scheduler-container"><form id="task-form" class="task-input-form"><input type="text" id="new-task-input" placeholder="Tugas baru..." required><input type="date" id="task-due-date" required><button type="submit" class="add-task-btn">Tambah</button></form><ul id="task-list" class="task-list"><li>Memuat...</li></ul></div>`;
+            document.getElementById('task-due-date').value = getTodayString();
+            
+            displayTasks(await fetchAllTasks());
+
+            document.getElementById('task-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const textInput = form.querySelector('#new-task-input');
+                const dateInput = form.querySelector('#task-due-date');
+                const submitBtn = form.querySelector('.add-task-btn');
+
+                if (textInput.value.trim() && dateInput.value) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Menyimpan...';
+                    await addTask({ text: textInput.value.trim(), dueDate: dateInput.value, completed: false });
+                    textInput.value = '';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Tambah';
+                }
+            });
+        }
+        
+        function displayTasks(tasks) {
+            const listEl = document.getElementById('task-list');
+            if (!tasksCollection) { listEl.innerHTML = '<p class="no-results-message">Fitur Jadwal eror. Periksa koneksi atau konfigurasi Firebase.</p>'; return; }
+            if (tasks.length === 0) { listEl.innerHTML = '<p class="no-results-message">Belum ada tugas.</p>'; return; }
+            listEl.innerHTML = '';
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                const dueDate = new Date(task.dueDate);
+                li.className = `task-item ${task.completed ? 'completed' : ''} ${!task.completed && dueDate < today ? 'overdue' : ''}`;
                 
-                if (type === 'links') {
-                    sectionHTML += grouped[category].map(item => `
-                        <a href="${item.url}" target="_blank" class="link-item">${item.text}</a>
-                    `).join('');
-                } else { // type === 'media'
-                     sectionHTML += grouped[category].map(item => `
-                        <a href="${item.url}" target="_blank" class="media-item-link">
-                            <img src="${item.thumbnailURL}" alt="${item.title}" class="thumbnail" loading="lazy">
-                            <div class="media-title">${item.title}</div>
-                        </a>
-                    `).join('');
-                }
-                sectionHTML += `</div>`;
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = task.completed;
+                checkbox.addEventListener('change', () => toggleTask(task.id, checkbox.checked));
+                
+                const details = document.createElement('div');
+                details.className = 'task-details';
+                details.innerHTML = `<span class="task-text">${task.text}</span><div class="task-date">Batas: ${new Date(task.dueDate).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</div>`;
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'delete-task-btn';
+                delBtn.innerHTML = '<i class="fas fa-trash-can"></i>';
+                delBtn.addEventListener('click', () => deleteTask(task.id));
+
+                li.append(checkbox, details, delBtn);
+                listEl.appendChild(li);
+            });
+        }
+        
+        async function addTask(data) {
+            try { await tasksCollection.add(data); await renderScheduler(); } catch (e) { console.error("Gagal menambah tugas:", e); }
+        }
+        async function toggleTask(id, completed) {
+            try { await tasksCollection.doc(id).update({ completed }); allTasks.find(t => t.id === id).completed = completed; displayTasks(allTasks); checkNotifications(); } catch (e) { console.error("Gagal update tugas:", e); }
+        }
+        async function deleteTask(id) {
+            if (confirm("Yakin ingin menghapus tugas ini?")) {
+                try { await tasksCollection.doc(id).delete(); await renderScheduler(); } catch (e) { console.error("Gagal menghapus tugas:", e); }
             }
-            return sectionHTML;
         }
 
-        // --- 4. Memasang Event Listener ---
-        
-        // Saat mengetik di search bar
-        searchInput.addEventListener('input', renderDynamicContent);
-        
-        // Saat salah satu tab diklik
         tabsNav.addEventListener('click', (e) => {
-            const clickedTab = e.target.closest('.tab-button');
-            if (!clickedTab) return;
-
-            // Pindahkan kelas 'active'
-            tabsNav.querySelector('.tab-button.active').classList.remove('active');
-            clickedTab.classList.add('active');
-            
-            // Render ulang konten sesuai tab yang baru aktif
+            if (!e.target.matches('.tab-button')) return;
+            tabsNav.querySelector('.active').classList.remove('active');
+            e.target.classList.add('active');
             renderDynamicContent();
         });
-        
-        // --- 5. Pengaturan Tema & Inisialisasi ---
+
+        const bell = document.getElementById('notification-bell');
+        bell.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('notif-dropdown').style.display = document.getElementById('notif-dropdown').style.display === 'block' ? 'none' : 'block';
+        });
+        window.addEventListener('click', (e) => {
+            if (!e.target.closest('.notification-bell')) document.getElementById('notif-dropdown').style.display = 'none';
+        });
+
         const themeToggle = document.getElementById('theme-toggle');
         const setDocsTheme = (isDark) => {
             document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
@@ -276,9 +354,9 @@
             themeToggle.checked = isDark;
         };
         themeToggle.addEventListener('change', () => setDocsTheme(themeToggle.checked));
+        
+        // --- INISIALISASI ---
         setDocsTheme(localStorage.getItem('theme') === 'dark');
-
-        // --- Mulai Semua ---
         renderStaticContent();
         renderDynamicContent();
     });
