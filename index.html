@@ -171,14 +171,15 @@
                 { category: 'Website Asuransi', text: 'Lain-lain 11', url: '#' },
                 { category: 'Lain-lain', text: 'Lain-lain 12', url: '#' }
             ],
+            // --- DATA GALERI ASLI ANDA (DIKEMBALIKAN) ---
             media: [ 
-                { category: 'Layanan Padma', title: 'Paket Melahirkan', thumbnailURL: 'https://images.unsplash.com/photo-1751767762107-c5f6da070638?q=80&w=711&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', url: '#'},
-                { category: 'Layanan Padma', title: 'Brosur Layanan Padma', thumbnailURL: 'https://images.unsplash.com/photo-1751767447021-0e7871027aea?q=80&w=1123&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', url: '#' },
-                { category: 'Layanan Padma', title: 'Paket Klinik Tumbuh Kembang', thumbnailURL: 'https://images.unsplash.com/photo-1751767761404-91becfbf9060?q=80&w=710&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', url: '#'},
+                { category: 'Layanan Padma', title: 'Paket Melahirkan', thumbnailURL: 'https://images.unsplash.com/photo-1751767762107-c5f6da070638?q=80&w=711&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', url: 'https://images.unsplash.com/photo-1751767762107-c5f6da070638?q=80&w=711&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'},
+                { category: 'Layanan Padma', title: 'Brosur Layanan Padma', thumbnailURL: 'https://images.unsplash.com/photo-1751767447021-0e7871027aea?q=80&w=1123&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', url: 'https://images.unsplash.com/photo-1751767447021-0e7871027aea?q=80&w=1123&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D,https://images.unsplash.com/photo-1751767390363-d14c0cc637fe?q=80&w=1122&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+                { category: 'Layanan Padma', title: 'Paket Klinik Tumbuh Kembang', thumbnailURL: 'https://images.unsplash.com/photo-1751767761404-91becfbf9060?q=80&w=710&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', url: 'https://images.unsplash.com/photo-1751767761404-91becfbf9060?q=80&w=710&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'},
             ],
             socials: [ 
-                { platform: 'website', url: '#' }, 
-                { platform: 'instagram', url: '#' } 
+                { platform: 'website', url: 'https://herminahospitals.com/id/branch/hermina-padang' }, 
+                { platform: 'instagram', url: 'https://instagram.com/rsuherminapadang' } 
             ]
         };
         const socialIconMap = { 'instagram': 'fa-brands fa-instagram', 'website': 'fa-solid fa-globe' };
@@ -198,19 +199,24 @@
             };
             updateClock(); setInterval(updateClock, 1000);
         }
-
+        
+        // --- FUNGSI PEMBANTU UNTUK MERENDER KONTEN (Tautan atau Media) ---
         function generateSectionHTML(items, type) {
+            if (items.length === 0) return '';
+            
             const grouped = items.reduce((acc, item) => {
                 const category = item.category || 'Lain-lain';
                 if (!acc[category]) acc[category] = [];
-                acc[category].push(item); return acc;
+                acc[category].push(item);
+                return acc;
             }, {});
+
             let html = '';
             for (const category in grouped) {
                 html += `<div class="category-group"><h2 class="category-title">${category}</h2>`;
-                if (type === 'links' || !item.thumbnailURL) { // Treat items without thumbnail as links
-                    html += grouped[category].map(item => `<a href="${item.url}" target="_blank" class="link-item">${item.text || item.title}</a>`).join('');
-                } else {
+                if (type === 'links') {
+                    html += grouped[category].map(item => `<a href="${item.url}" target="_blank" class="link-item">${item.text}</a>`).join('');
+                } else if (type === 'media') {
                     html += grouped[category].map(item => `<a href="${item.url}" target="_blank" class="media-item-link"><img src="${item.thumbnailURL}" alt="${item.title}" class="thumbnail" loading="lazy"><div class="media-title">${item.title}</div></a>`).join('');
                 }
                 html += `</div>`;
@@ -218,25 +224,41 @@
             return html;
         }
 
+        // --- FUNGSI UTAMA UNTUK MENAMPILKAN KONTEN BERDASARKAN TAB & PENCARIAN (DIPERBAIKI) ---
         async function renderDynamicContent() {
             const searchTerm = searchInput.value.toLowerCase().trim();
             const activeTab = document.querySelector('.tab-button.active').dataset.tab;
             searchInput.parentElement.style.display = (activeTab === 'scheduler') ? 'none' : 'block';
 
-            if (activeTab === 'scheduler') { await renderScheduler(); return; }
+            if (activeTab === 'scheduler') {
+                await renderScheduler();
+                return;
+            }
 
             let htmlToRender = '';
             if (searchTerm) {
+                // Jika sedang mencari, saring kedua jenis konten
                 const filteredLinks = DATA.links.filter(item => item.text.toLowerCase().includes(searchTerm));
                 const filteredMedia = DATA.media.filter(item => item.title.toLowerCase().includes(searchTerm));
-                if (filteredLinks.length > 0) htmlToRender += generateSectionHTML(filteredLinks, 'links');
-                if (filteredMedia.length > 0) htmlToRender += generateSectionHTML(filteredMedia, 'media');
+                
+                if (filteredLinks.length > 0) {
+                    htmlToRender += generateSectionHTML(filteredLinks, 'links');
+                }
+                if (filteredMedia.length > 0) {
+                    htmlToRender += generateSectionHTML(filteredMedia, 'media');
+                }
             } else {
-                const dataToRender = activeTab === 'links' ? DATA.links : DATA.media;
-                htmlToRender = generateSectionHTML(dataToRender, activeTab);
+                // Jika tidak sedang mencari, tampilkan konten sesuai tab yang aktif
+                if (activeTab === 'links') {
+                    htmlToRender = generateSectionHTML(DATA.links, 'links');
+                } else if (activeTab === 'media') {
+                    htmlToRender = generateSectionHTML(DATA.media, 'media');
+                }
             }
+            
             contentArea.innerHTML = htmlToRender || '<p class="no-results-message">Tidak ada konten yang cocok.</p>';
         }
+
 
         // --- FUNGSI JADWAL & NOTIFIKASI ---
         async function fetchAllTasks() {
