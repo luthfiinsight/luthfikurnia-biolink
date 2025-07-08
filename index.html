@@ -148,12 +148,12 @@
     const SECURITY_KEY = 'Herminapadang31'; 
 
     const firebaseConfig = {
-      apiKey: "AIzaSyADSnXFphs_QxkdbMSFcASdGTB5kDp-Z14",
-      authDomain: "luthfibiolink.firebaseapp.com",
-      projectId: "luthfibiolink",
-      storageBucket: "luthfibiolink.firebasestorage.app",
-      messagingSenderId: "296044916072",
-      appId: "1:296044916072:web:5fc56b4f432da478fd3add"
+      apiKey: "PASTE_API_KEY_ANDA_DI_SINI",
+      authDomain: "PASTE_AUTH_DOMAIN_ANDA_DI_SINI",
+      projectId: "PASTE_PROJECT_ID_ANDA_DI_SINI",
+      storageBucket: "PASTE_STORAGE_BUCKET_ANDA_DI_SINI",
+      messagingSenderId: "PASTE_MESSAGING_SENDER_ID_ANDA_DI_SINI",
+      appId: "PASTE_APP_ID_ANDA_DI_SINI"
     };
 
     let db, tasksCollection;
@@ -231,7 +231,7 @@
         
         function resetInactivityTimer() {
             clearTimeout(inactivityTimer);
-            inactivityTimer = setTimeout(lockWebsite, 300000);
+            inactivityTimer = setTimeout(lockWebsite, 30000);
         }
 
         function renderStaticContent() {
@@ -387,7 +387,13 @@
             renderDynamicContent();
             requestNotificationPermission();
             setInterval(checkTasksAndNotify, 30000);
-            tabsNav.addEventListener('click', (e) => { if (!e.target.matches('.tab-button')) return; tabsNav.querySelector('.active').classList.remove('active'); e.target.classList.add('active'); renderDynamicContent(); });
+            tabsNav.addEventListener('click', (e) => {
+                if (!e.target.matches('.tab-button')) return;
+                resetInactivityTimer(); // **PERBAIKAN: Reset timer saat tab diklik**
+                tabsNav.querySelector('.active').classList.remove('active');
+                e.target.classList.add('active');
+                renderDynamicContent();
+            });
             searchInput.addEventListener('input', renderDynamicContent);
             const bell = document.getElementById('notification-bell');
             bell.addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('notif-dropdown').style.display = document.getElementById('notif-dropdown').style.display === 'block' ? 'none' : 'block'; });
@@ -422,6 +428,18 @@
             }
         });
         keyInput.focus();
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('Service Worker berhasil didaftarkan: ', registration);
+                    })
+                    .catch(error => {
+                        console.log('Pendaftaran Service Worker gagal: ', error);
+                    });
+            });
+        }
     });
     </script>
 </body>
