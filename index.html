@@ -166,6 +166,7 @@
     }
     
     document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. DEKLARASI KONSTANTA & VARIABEL ---
         const DATA = {
             profile: { 
                 pageTitle: 'Bio Link Luthfi Kurnia',
@@ -212,12 +213,18 @@
         const keyInput = document.getElementById('security-key-input');
         const profileSection = document.getElementById('profile-section'), contentArea = document.getElementById('content-area'), socialsContainer = document.getElementById('socials-container'), searchInput = document.getElementById('search-input'), tabsNav = document.querySelector('.tabs-nav');
         let allTasks = [];
-        let isInitialized = false;
 
+        // --- 2. DEKLARASI SEMUA FUNGSI ---
+        
         function initializeLockScreen() {
             document.getElementById('lock-screen-pic').src = DATA.profile.photoURL;
             document.getElementById('lock-screen-name').textContent = DATA.profile.name;
             document.getElementById('lock-screen-message').textContent = "Terima Kasih telah mengunjungi Website Saya, untuk mendapatkan informasi di dalamnya, Silahkan Masukan Kata Sandinya :)";
+        }
+
+        function unlockWebsite() {
+            lockScreen.classList.add('hidden');
+            mainContainer.classList.remove('hidden');
         }
 
         function renderStaticContent() {
@@ -374,37 +381,19 @@
             });
         }
 
-        function initializeApp() {
-            renderStaticContent();
-            renderDynamicContent();
-            requestNotificationPermission();
-            setInterval(checkTasksAndNotify, 30000);
-            tabsNav.addEventListener('click', (e) => { 
-                if (!e.target.matches('.tab-button')) return;
-                tabsNav.querySelector('.active').classList.remove('active'); 
-                e.target.classList.add('active'); 
-                renderDynamicContent(); 
-            });
-            searchInput.addEventListener('input', renderDynamicContent);
-            const bell = document.getElementById('notification-bell');
-            bell.addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('notif-dropdown').style.display = document.getElementById('notif-dropdown').style.display === 'block' ? 'none' : 'block'; });
-            window.addEventListener('click', (e) => { if (!e.target.closest('.notification-bell')) document.getElementById('notif-dropdown').style.display = 'none'; });
-            const themeToggle = document.getElementById('theme-toggle');
-            const setDocsTheme = (isDark) => { document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light'); localStorage.setItem('theme', isDark ? 'dark' : 'light'); themeToggle.checked = isDark; };
-            themeToggle.addEventListener('change', () => setDocsTheme(themeToggle.checked));
-            setDocsTheme(localStorage.getItem('theme') === 'dark');
-        }
-        
-        function unlockWebsite() {
-            lockScreen.classList.add('hidden');
-            mainContainer.classList.remove('hidden');
-            if (!isInitialized) {
-                initializeApp();
-                isInitialized = true;
-            }
-        }
+        // --- 3. INISIALISASI DAN EVENT LISTENERS ---
 
+        // Personalisasi layar kunci
         initializeLockScreen();
+        keyInput.focus();
+
+        // Siapkan semua konten di awal (saat masih tersembunyi)
+        renderStaticContent();
+        renderDynamicContent();
+        requestNotificationPermission();
+        setInterval(checkTasksAndNotify, 30000);
+
+        // Pasang listener untuk form login
         lockForm.addEventListener('submit', (e) => {
             e.preventDefault();
             if (keyInput.value === SECURITY_KEY) {
@@ -416,8 +405,32 @@
                 keyInput.value = '';
             }
         });
-        keyInput.focus();
 
+        // Pasang semua listener untuk aplikasi utama
+        tabsNav.addEventListener('click', (e) => { 
+            if (!e.target.matches('.tab-button')) return;
+            tabsNav.querySelector('.active').classList.remove('active'); 
+            e.target.classList.add('active'); 
+            renderDynamicContent(); 
+        });
+        searchInput.addEventListener('input', renderDynamicContent);
+        document.getElementById('notification-bell').addEventListener('click', (e) => { 
+            e.stopPropagation(); 
+            document.getElementById('notif-dropdown').style.display = document.getElementById('notif-dropdown').style.display === 'block' ? 'none' : 'block'; 
+        });
+        window.addEventListener('click', (e) => { 
+            if (!e.target.closest('.notification-bell')) document.getElementById('notif-dropdown').style.display = 'none'; 
+        });
+        const themeToggle = document.getElementById('theme-toggle');
+        const setDocsTheme = (isDark) => { 
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light'); 
+            localStorage.setItem('theme', isDark ? 'dark' : 'light'); 
+            themeToggle.checked = isDark; 
+        };
+        themeToggle.addEventListener('change', () => setDocsTheme(themeToggle.checked));
+        setDocsTheme(localStorage.getItem('theme') === 'dark');
+
+        // Pendaftaran Service Worker untuk PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
