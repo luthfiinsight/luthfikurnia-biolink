@@ -214,33 +214,6 @@
         let allTasks = [];
         let isInitialized = false;
 
-        // --- LOGIKA KUNCI OTOMATIS (METODE BARU YANG TANGGUH) ---
-        let lastActivityTime;
-        let inactivityCheckerInterval;
-
-        function updateLastActivityTime() {
-            lastActivityTime = Date.now();
-        }
-
-        function startInactivityChecker() {
-            updateLastActivityTime();
-            if (inactivityCheckerInterval) clearInterval(inactivityCheckerInterval);
-            inactivityCheckerInterval = setInterval(() => {
-                if (Date.now() - lastActivityTime > 30000) { // 30 detik
-                    lockWebsite();
-                }
-            }, 5000); // Cek setiap 5 detik
-        }
-        
-        function lockWebsite() {
-            if (inactivityCheckerInterval) clearInterval(inactivityCheckerInterval);
-            mainContainer.classList.add('hidden');
-            lockScreen.classList.remove('hidden');
-            keyInput.value = '';
-            keyInput.focus();
-        }
-
-        // --- FUNGSI TAMPILAN DAN APLIKASI ---
         function initializeLockScreen() {
             document.getElementById('lock-screen-pic').src = DATA.profile.photoURL;
             document.getElementById('lock-screen-name').textContent = DATA.profile.name;
@@ -406,9 +379,12 @@
             renderDynamicContent();
             requestNotificationPermission();
             setInterval(checkTasksAndNotify, 30000);
-
-            // Pasang semua event listener untuk konten utama
-            tabsNav.addEventListener('click', (e) => { if (!e.target.matches('.tab-button')) return; tabsNav.querySelector('.active').classList.remove('active'); e.target.classList.add('active'); renderDynamicContent(); });
+            tabsNav.addEventListener('click', (e) => { 
+                if (!e.target.matches('.tab-button')) return;
+                tabsNav.querySelector('.active').classList.remove('active'); 
+                e.target.classList.add('active'); 
+                renderDynamicContent(); 
+            });
             searchInput.addEventListener('input', renderDynamicContent);
             const bell = document.getElementById('notification-bell');
             bell.addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('notif-dropdown').style.display = document.getElementById('notif-dropdown').style.display === 'block' ? 'none' : 'block'; });
@@ -417,11 +393,6 @@
             const setDocsTheme = (isDark) => { document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light'); localStorage.setItem('theme', isDark ? 'dark' : 'light'); themeToggle.checked = isDark; };
             themeToggle.addEventListener('change', () => setDocsTheme(themeToggle.checked));
             setDocsTheme(localStorage.getItem('theme') === 'dark');
-            
-            // Pasang listener aktivitas untuk me-reset timer
-            ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart', 'click', 'focus'].forEach(event => {
-                window.addEventListener(event, updateLastActivityTime, true);
-            });
         }
         
         function unlockWebsite() {
@@ -431,10 +402,8 @@
                 initializeApp();
                 isInitialized = true;
             }
-            startInactivityChecker();
         }
 
-        // --- INISIALISASI HALAMAN ---
         initializeLockScreen();
         lockForm.addEventListener('submit', (e) => {
             e.preventDefault();
