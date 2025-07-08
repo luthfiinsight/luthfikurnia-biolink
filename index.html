@@ -163,7 +163,6 @@
         tasksCollection = db.collection("tasks");
     } catch (e) {
         console.error("Firebase GAGAL dimuat. Periksa `firebaseConfig` Anda.", e);
-        alert("Konfigurasi Firebase tidak valid. Fitur To-Do List tidak akan berfungsi.");
     }
     
     document.addEventListener('DOMContentLoaded', () => {
@@ -318,7 +317,7 @@
         
         function getTodayString() {
             const today = new Date();
-            const<x_bin_880> = today.getFullYear();
+            const yyyy = today.getFullYear();
             const mm = String(today.getMonth() + 1).padStart(2, '0');
             const dd = String(today.getDate()).padStart(2, '0');
             return `${yyyy}-${mm}-${dd}`;
@@ -335,7 +334,6 @@
             contentArea.innerHTML = `<div class="task-scheduler-container"><form id="task-form" class="task-input-form"><input type="text" id="new-task-input" placeholder="Tugas baru..." required><input type="date" id="task-due-date" required><input type="time" id="task-due-time" required><button type="submit" class="add-task-btn">Tambah</button></form><ul id="task-list" class="task-list"><li>Memuat...</li></ul></div>`;
             document.getElementById('task-due-date').value = getTodayString();
             document.getElementById('task-due-time').value = getCurrentTimeString();
-            displayTasks(await fetchAllTasks());
             document.getElementById('task-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const form = e.target, textInput = form.querySelector('#new-task-input'), dateInput = form.querySelector('#task-due-date'), timeInput = form.querySelector('#task-due-time'), submitBtn = form.querySelector('.add-task-btn');
@@ -345,12 +343,13 @@
                     textInput.value = ''; submitBtn.disabled = false; submitBtn.textContent = 'Tambah';
                 }
             });
+            displayTasks(await fetchAllTasks());
         }
         
         function displayTasks(tasks) {
             const listEl = document.getElementById('task-list');
             if (!tasksCollection) { listEl.innerHTML = '<p class="no-results-message">Fitur To-Do List eror.</p>'; return; }
-            if (tasks.length === 0) { listEl.innerHTML = '<p class="no-results-message">Belum ada tugas.</p>'; return; }
+            if (!tasks || tasks.length === 0) { listEl.innerHTML = '<p class="no-results-message">Belum ada tugas.</p>'; return; }
             listEl.innerHTML = '';
             tasks.forEach(task => {
                 const li = document.createElement('li'), dueDate = new Date(`${task.dueDate}T${task.dueTime || '00:00'}`);
