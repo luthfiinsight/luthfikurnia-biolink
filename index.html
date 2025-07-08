@@ -288,12 +288,9 @@
         async function fetchAllTasks() {
             if (!tasksCollection) return [];
             try {
-                // **PERBAIKAN:** Menggunakan query yang lebih sederhana dan tangguh
                 const snapshot = await tasksCollection.orderBy("dueDate", "desc").get();
-                // Urutkan sisanya menggunakan JavaScript untuk fleksibilitas
                 const tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 tasks.sort((a, b) => (a.dueTime || "00:00").localeCompare(b.dueTime || "00:00"));
-                
                 allTasks = tasks;
                 checkNotifications();
                 return allTasks;
@@ -321,7 +318,7 @@
         
         function getTodayString() {
             const today = new Date();
-            const yyyy = today.getFullYear();
+            const<x_bin_880> = today.getFullYear();
             const mm = String(today.getMonth() + 1).padStart(2, '0');
             const dd = String(today.getDate()).padStart(2, '0');
             return `${yyyy}-${mm}-${dd}`;
@@ -403,15 +400,23 @@
                 e.target.classList.add('active'); 
                 renderDynamicContent(); 
             });
-            searchInput.addEventListener('input', renderDynamicContent);
+            searchInput.addEventListener('input', () => {
+                resetInactivityTimer();
+                renderDynamicContent();
+            });
             const bell = document.getElementById('notification-bell');
-            bell.addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('notif-dropdown').style.display = document.getElementById('notif-dropdown').style.display === 'block' ? 'none' : 'block'; });
+            bell.addEventListener('click', (e) => { 
+                resetInactivityTimer();
+                e.stopPropagation(); 
+                document.getElementById('notif-dropdown').style.display = document.getElementById('notif-dropdown').style.display === 'block' ? 'none' : 'block'; 
+            });
             window.addEventListener('click', (e) => { if (!e.target.closest('.notification-bell')) document.getElementById('notif-dropdown').style.display = 'none'; });
             const themeToggle = document.getElementById('theme-toggle');
             const setDocsTheme = (isDark) => { document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light'); localStorage.setItem('theme', isDark ? 'dark' : 'light'); themeToggle.checked = isDark; };
             themeToggle.addEventListener('change', () => setDocsTheme(themeToggle.checked));
             setDocsTheme(localStorage.getItem('theme') === 'dark');
             ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'].forEach(event => { window.addEventListener(event, resetInactivityTimer); });
+            window.addEventListener('focus', resetInactivityTimer);
         }
         
         function unlockWebsite() {
