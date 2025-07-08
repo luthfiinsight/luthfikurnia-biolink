@@ -288,11 +288,20 @@
         async function fetchAllTasks() {
             if (!tasksCollection) return [];
             try {
-                const snapshot = await tasksCollection.orderBy("dueDate").orderBy("dueTime").get();
-                allTasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // **PERBAIKAN:** Menggunakan query yang lebih sederhana dan tangguh
+                const snapshot = await tasksCollection.orderBy("dueDate", "desc").get();
+                // Urutkan sisanya menggunakan JavaScript untuk fleksibilitas
+                const tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                tasks.sort((a, b) => (a.dueTime || "00:00").localeCompare(b.dueTime || "00:00"));
+                
+                allTasks = tasks;
                 checkNotifications();
                 return allTasks;
-            } catch (error) { console.error("Error fetching tasks:", error); return []; }
+            } catch (error) { 
+                console.error("Error fetching tasks:", error); 
+                contentArea.innerHTML = '<p class="no-results-message">Gagal memuat tugas. Pastikan indeks `dueDate` (descending) ada di Firebase.</p>';
+                return []; 
+            }
         }
 
         function checkNotifications() {
@@ -387,12 +396,12 @@
             renderDynamicContent();
             requestNotificationPermission();
             setInterval(checkTasksAndNotify, 30000);
-            tabsNav.addEventListener('click', (e) => {
+            tabsNav.addEventListener('click', (e) => { 
                 if (!e.target.matches('.tab-button')) return;
-                resetInactivityTimer(); // **PERBAIKAN: Reset timer saat tab diklik**
-                tabsNav.querySelector('.active').classList.remove('active');
-                e.target.classList.add('active');
-                renderDynamicContent();
+                resetInactivityTimer();
+                tabsNav.querySelector('.active').classList.remove('active'); 
+                e.target.classList.add('active'); 
+                renderDynamicContent(); 
             });
             searchInput.addEventListener('input', renderDynamicContent);
             const bell = document.getElementById('notification-bell');
@@ -432,12 +441,8 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(registration => {
-                        console.log('Service Worker berhasil didaftarkan: ', registration);
-                    })
-                    .catch(error => {
-                        console.log('Pendaftaran Service Worker gagal: ', error);
-                    });
+                    .then(registration => { console.log('SW terdaftar: ', registration); })
+                    .catch(error => { console.log('Pendaftaran SW gagal: ', error); });
             });
         }
     });
